@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    /* Base */
+    "esModuleInterop": true, // Conserta lacunas entre CommonJS e ESModules
+    "skipLibCheck": true, // Evita checagens dos tipos d.ts (node_modules)
+    "target": "es2022", // Versão do JavaScript (estável)
+    "allowJs": true, // Permite a importação de arquivos JS
+    "resolveJsonModule": true, // Permite a importação de arquivos JSON
+    "moduleDetection": "force", // Força o TS a reconhecer todos os arquivos como módulos
+    "isolatedModules": true, // Previne ferramentas TS inseguras com módules isolados
+    "verbatimModuleSyntax": true, // Força a importação ou exportação com type, evitando imports desnecessários
+
+    /* Restrições */
+    "strict": true, // Checagem do comportamento dos tipos
+    "noUncheckedIndexedAccess": true, // Evita acessar objetos ou arrays sem declará-los anteriormente
+    "noImplicitOverride": true, // Torna override útil nas classes
+
+    /* Transpilação */
+    "module": "nodenext", // Módulo da sintaxe do TypeScript
+    "outDir": "./dist", // Local dos arquivos JavaScript compilados
+
+    /* Bibliotecas JS */
+    "lib": ["ES2022"],
+
+    /* Raiz */
+    "rootDir": "./src"
+  }
+}

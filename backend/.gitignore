@@ -1,0 +1,12 @@
+# Dependências
+/node_modules
+
+# Build
+/dist
+/build
+
+# IDF
+/.vscode
+
+# Testes
+/coverage
