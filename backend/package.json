@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./dist/server.cjs",
     "build": "tsup ./src",
-    "dev": "tsx ./src/server.ts"
+    "dev": "tsx watch ./src/server.ts"
   },
   "keywords": [],
   "author": "",
@@ -14,8 +14,8 @@
   "type": "module",
   "devDependencies": {
     "@types/express": "^5.0.3",
-    "@types/node": "^24.5.0",
     "@types/http-proxy-middleware": "^0.19.3",
+    "@types/node": "^24.5.0",
     "tsup": "^8.5.0",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2"
