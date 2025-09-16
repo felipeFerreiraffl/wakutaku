@@ -1,18 +1,11 @@
 import express from "express";
-import { createProxyMiddleware } from "http-proxy-middleware";
+import rateLimiter from "./middlewares/rateLimiter.js";
+import apiProxy from "./middlewares/proxy.js";
 
 const app = express();
 app.use(express.json());
 
-// Criação de uma proxy
-const apiProxy = createProxyMiddleware({
-  target: "https://api.jikan.moe/v4",
-  changeOrigin: true,
-  pathRewrite: {
-    "^/api": "",
-  },
-});
-
-app.use("/api", apiProxy);
+app.use(apiProxy);
+app.use(rateLimiter);
 
 export default app;
