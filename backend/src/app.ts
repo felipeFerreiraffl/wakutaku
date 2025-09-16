@@ -1,11 +1,13 @@
 import express from "express";
-import rateLimiter from "./middlewares/rateLimiter.js";
-import apiProxy from "./middlewares/proxy.js";
+import jikanRouter from "./routes/jikan.js";
+import { errorHandler, notFoundHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 app.use(express.json());
 
-app.use(apiProxy);
-app.use(rateLimiter);
+app.use("/api", jikanRouter);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 export default app;
