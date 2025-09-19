@@ -1,6 +1,6 @@
 import express from "express";
-import { notFoundHandler, tooManyRequestsHandler } from "./middlewares/errorHandler.js";
 import jikanRouter from "./routes/jikan.js";
+import { errorHandler, notFoundHandler } from "./middlewares/statusHandler.js";
 
 const app = express();
 app.use(express.json());
@@ -8,8 +8,8 @@ app.use(express.json());
 // Rotas
 app.use("/api", jikanRouter);
 
-// Middleware de erros
+// Middleware de status
+app.use(errorHandler);
 app.use(notFoundHandler);
-app.use(tooManyRequestsHandler);
 
 export default app;

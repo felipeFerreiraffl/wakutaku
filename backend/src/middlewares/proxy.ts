@@ -7,6 +7,7 @@ const jikanProxy = createProxyMiddleware({
   pathRewrite: {
     "^/api": "",
   },
+  timeout: 10000,
 });
 
 export default jikanProxy;
