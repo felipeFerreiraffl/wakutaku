@@ -10,9 +10,9 @@ export const mostFrequentTheme = (
 
   if (theme === "genres") {
     // Busca os gêneros de todos os animes e inicia uma contagem relacionada ao tema
-    data.data.forEach((list) =>
-      list.genres.forEach((genre) => {
-        dataMap[genre.name] = (dataMap[genre.name] || 0) + 1;
+    data.data?.forEach((list) =>
+      list.genres?.forEach((genre) => {
+        dataMap[genre?.name] = (dataMap[genre?.name] || 0) + 1;
       })
     );
 
@@ -25,9 +25,9 @@ export const mostFrequentTheme = (
       }
     }
   } else if (theme === "demographics") {
-    data.data.forEach((list) =>
-      list.demographics.forEach((demography) => {
-        dataMap[demography.name] = (dataMap[demography.name] || 0) + 1;
+    data.data?.forEach((list) =>
+      list.demographics?.forEach((demography) => {
+        dataMap[demography?.name] = (dataMap[demography?.name] || 0) + 1;
       })
     );
 

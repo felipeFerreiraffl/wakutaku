@@ -32,11 +32,19 @@ export const getSeasonStats = async (
       demographyMap
     );
 
+    let scoreCount = 0;
+    data.data.forEach((anime) => {
+      scoreCount += anime.score || 0;
+    });
+
+    const avarageScore = (scoreCount / data.pagination.items.count).toFixed(2);
+
     res.status(200).json({
       success: true,
       totalCount,
       frequentGenre,
       frequentDemography,
+      avarageScore,
     });
   } catch (error) {
     console.error(`Erro de servidor: ${error}`);
