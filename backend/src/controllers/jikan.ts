@@ -3,6 +3,7 @@ import type {
   JikanResponse,
   JikanSeasonResponse,
 } from "../types/jikanTypes.js";
+import { mostFrequentTheme } from "../utils/mostFrequentData.js";
 
 export const getSeasonStats = async (
   req: Request,
@@ -15,38 +16,27 @@ export const getSeasonStats = async (
     if (!response.ok) {
       throw new Error("Erro ao buscar estatísticas da temporada atual");
     }
-    
+
     const data: JikanSeasonResponse = await response.json();
 
     // Total de animes na temporada
     const totalCount = data.pagination.items?.total || 0;
 
-    // Gênero predominante
+    // Atribuição de gênero e sua contagem entre os animes
     const genreMap: Record<string, number> = {};
-    data.data.forEach((list) =>
-      list.genres.forEach(
-        // Busca os gêneros de todos os animes e inicia uma contagem relacionada ao gênero
-        (genre) => (genreMap[genre.name] = (genreMap[genre.name] || 0) + 1)
-      )
+    const demographyMap: Record<string, number> = {};
+    const frequentGenre = mostFrequentTheme("genres", data, genreMap);
+    const frequentDemography = mostFrequentTheme(
+      "demographics",
+      data,
+      demographyMap
     );
-
-    let mostFrequentGenre = "";
-    let genreCount = 0;
-
-    // Loop que busca a contagem de cada gênero
-    for (const [genre, count] of Object.entries(genreMap)) {
-      // Verifica se a contagem do gênero for maior que outras
-      if (count > genreCount) {
-        // Atribui aos valores de contagem e gênero
-        mostFrequentGenre = genre;
-        genreCount = count;
-      }
-    }
 
     res.status(200).json({
       success: true,
       totalCount,
-      mostFrequentGenre,
+      frequentGenre,
+      frequentDemography,
     });
   } catch (error) {
     console.error(`Erro de servidor: ${error}`);
