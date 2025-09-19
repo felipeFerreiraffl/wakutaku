@@ -1,29 +1,37 @@
 import { type NextFunction, type Request, type Response } from "express";
+import { success } from "zod";
 
 // Erro que contempla Error com status
 interface JikanError extends Error {
   status?: number | undefined;
 }
 
-// Erro personalizado
-export const errorHandler = (
-  err: JikanError,
+// Erro 404 -> rota não encontrada
+export const notFoundHandler = (
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
-  if (res.headersSent) {
-    return next(err);
-  }
+  const error: JikanError = new Error(`Rota ${req.originalUrl} não encontrada`);
 
-  const status = err.status || 500;
-  const message = err.message || 500;
-
-  console.error(`Erro ${status}: ${message}`);
-
-  res.status(status).json({
+  res.status(404).json({
     success: false,
-    status,
-    message,
+    message: error.message,
+  });
+};
+
+// Erro 429 -> muitas requisições
+export const tooManyRequestsHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const error: JikanError = new Error(
+    "Muitas requisições. Tente novamente mais tarde."
+  );
+
+  res.status(429).json({
+    success: false,
+    message: error.message,
   });
 };
