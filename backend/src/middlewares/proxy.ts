@@ -1,7 +1,8 @@
 import { createProxyMiddleware } from "http-proxy-middleware";
+import { type Request, type Response } from "express";
 
 // Configuração do middleware do proxy da Jikan
-const apiProxy = createProxyMiddleware({
+const jikanProxy = createProxyMiddleware({
   target: "https://api.jikan.moe/v4",
   changeOrigin: true,
   pathRewrite: {
@@ -9,4 +10,4 @@ const apiProxy = createProxyMiddleware({
   },
 });
 
-export default apiProxy;
+export default jikanProxy;
