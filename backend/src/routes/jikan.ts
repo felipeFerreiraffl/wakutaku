@@ -1,14 +1,15 @@
 import { Router } from "express";
+import jikanProxy from "../middlewares/proxy.js";
 import {
   globalRateLimiter,
   searchRateLimiter,
 } from "../middlewares/rateLimiter.js";
-import jikanProxy from "../middlewares/proxy.js";
+import { getSeasonStats } from "../controllers/jikan.js";
 
 // Rota do Express
 const router = Router();
 
-/* ---------- Rotas de animes ---------- */
+/* ========== Rotas de animes ========== */
 
 // TOP animes por categoria, tipo ou classificação
 router.get("/top/anime", globalRateLimiter, jikanProxy);
@@ -64,7 +65,7 @@ router.get("/anime/:id/recommendations", globalRateLimiter, jikanProxy);
 // Imagens (fundo)
 router.get("/anime/:id/pictures", globalRateLimiter, jikanProxy);
 
-/* ---------- Rotas de mangás ---------- */
+/* ========== Rotas de mangás ========== */
 
 // TOP mangás por categoria, tipo ou classificação
 router.get("/top/manga", globalRateLimiter, jikanProxy);
@@ -108,6 +109,9 @@ router.get("/manga/:id/recommendations", globalRateLimiter, jikanProxy);
 // Estatísticas (quantidade de notas dos usuários)
 router.get("/manga/:id/statistics", globalRateLimiter, jikanProxy);
 
-/* ---------- Rotas personalizadas ---------- */
+/* ========== Rotas personalizadas ========== */
+
+// Estatísticas da temporada
+router.get("/season_stats", globalRateLimiter, getSeasonStats);
 
 export default router;

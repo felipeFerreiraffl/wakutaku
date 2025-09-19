@@ -1,5 +1,5 @@
 import express from "express";
-import { errorHandler } from "./middlewares/errorHandler.js";
+import { notFoundHandler, tooManyRequestsHandler } from "./middlewares/errorHandler.js";
 import jikanRouter from "./routes/jikan.js";
 
 const app = express();
@@ -9,6 +9,7 @@ app.use(express.json());
 app.use("/api", jikanRouter);
 
 // Middleware de erros
-app.use(errorHandler);
+app.use(notFoundHandler);
+app.use(tooManyRequestsHandler);
 
 export default app;
