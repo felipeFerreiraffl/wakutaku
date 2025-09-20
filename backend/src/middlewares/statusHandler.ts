@@ -2,10 +2,11 @@ import { type NextFunction, type Request, type Response } from "express";
 import { success } from "zod";
 
 // Erro que contempla Error com status
-interface JikanError extends Error {
+export interface JikanError extends Error {
   status?: number | undefined;
 }
 
+// Códigos HTTP
 const getStatusCode: Record<number, string> = {
   200: "OK",
   400: "BAD_REQUEST",
@@ -17,6 +18,7 @@ const getStatusCode: Record<number, string> = {
   504: "GATEWAY_TIMEOUT",
 };
 
+// Mensagem de sucesso
 export const setSuccessMessage = (res: Response, data: {}): Response => {
   return res.status(200).json({
     success: true,
@@ -24,6 +26,7 @@ export const setSuccessMessage = (res: Response, data: {}): Response => {
   });
 };
 
+// Mensagens de erro
 export const errorHandler = (
   err: JikanError,
   req: Request,

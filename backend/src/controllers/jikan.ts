@@ -1,7 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
-import type { JikanSeasonResponse } from "../types/jikanTypes.js";
-import { mostFrequentTheme } from "../utils/mostFrequentData.js";
 import { setSuccessMessage } from "../middlewares/statusHandler.js";
+import type { JikanSeasonResponse } from "../types/jikanTypes.js";
+import { fetchJikanResponse } from "../utils/fetchJikan.js";
+import { mostFrequentTheme } from "../utils/mostFrequentData.js";
 
 // Estatísticas da temporada atual
 export const getSeasonStats = async (
@@ -10,13 +11,9 @@ export const getSeasonStats = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const response = await fetch("https://api.jikan.moe/v4/seasons/now");
-
-    if (!response.ok) {
-      throw new Error("Erro ao buscar estatísticas da temporada atual");
-    }
-
-    const data: JikanSeasonResponse = await response.json();
+    const data = await fetchJikanResponse<JikanSeasonResponse>(
+      "https://api.jikan.moe/v4/seasons/now"
+    );
 
     // Total de animes na temporada
     const totalCount = data.pagination?.items?.total || 0;
@@ -49,9 +46,3 @@ export const getSeasonStats = async (
     next(error);
   }
 };
-
-// export const getSeasonBestAnimes = (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ): Promise<void> => {};
