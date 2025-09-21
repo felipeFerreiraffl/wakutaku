@@ -33,14 +33,14 @@ export const getSeasonStats = async (
     data.data.forEach((anime) => {
       scoreCount += anime.score || 0;
     });
-    const avarageScore =
+    const averageScore =
       (scoreCount / data.pagination?.items?.count).toFixed(2) || "0.00"; // Média das avaliações
 
     setSuccessMessage(res, {
       totalCount,
       frequentGenre,
       frequentDemography,
-      avarageScore,
+      averageScore,
     });
   } catch (error) {
     next(error);
