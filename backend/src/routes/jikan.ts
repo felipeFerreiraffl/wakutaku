@@ -1,10 +1,11 @@
 import { Router } from "express";
+import { getSeasonStats } from "../controllers/jikan.js";
 import jikanProxy from "../middlewares/proxy.js";
 import {
   globalRateLimiter,
   searchRateLimiter,
 } from "../middlewares/rateLimiter.js";
-import { getSeasonStats } from "../controllers/jikan.js";
+import { conditionalRateLimiter } from "../utils/conditionalRateLimiter.js";
 
 // Rota do Express
 const router = Router();
@@ -36,7 +37,7 @@ router.get("/genres/anime", globalRateLimiter, jikanProxy);
 router.get("/producers", globalRateLimiter, jikanProxy);
 
 // Pesquisa de animes
-router.get("/anime", searchRateLimiter, jikanProxy);
+router.get("/anime", conditionalRateLimiter, jikanProxy);
 
 // Detalhes de um anime
 router.get("/anime/:id", globalRateLimiter, jikanProxy);
@@ -83,10 +84,7 @@ router.get("/genres/manga", globalRateLimiter, jikanProxy);
 router.get("/magazines", globalRateLimiter, jikanProxy);
 
 // Pesquisa de mangás
-router.get("/manga", searchRateLimiter, jikanProxy);
-
-// Pesquisa de mangás
-router.get("/manga", searchRateLimiter, jikanProxy);
+router.get("/manga", conditionalRateLimiter, jikanProxy);
 
 // Detalhes de um mangás
 router.get("/manga/:id", globalRateLimiter, jikanProxy);

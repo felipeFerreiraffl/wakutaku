@@ -1,6 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
 import { setSuccessMessage } from "../middlewares/statusHandler.js";
-import type { JikanSeasonResponse } from "../types/jikanTypes.js";
+import type {
+  JikanMangaListResponse,
+  JikanSeasonResponse,
+} from "../types/jikanTypes.js";
 import { fetchJikanResponse } from "../utils/fetchJikan.js";
 import { mostFrequentTheme } from "../utils/mostFrequentData.js";
 
