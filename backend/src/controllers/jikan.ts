@@ -20,7 +20,7 @@ export const getSeasonStats = async (
     );
 
     // Total de animes na temporada
-    const totalCount = data.pagination?.items?.total || 0;
+    const totalCount = data.pagination?.items?.total ?? 0;
 
     // Atribuição de gênero e sua contagem entre os animes
     const genreMap: Record<string, number> = {};
@@ -35,7 +35,7 @@ export const getSeasonStats = async (
     // Contagem das avaliações dos animes
     let scoreCount = 0;
     data.data.forEach((anime) => {
-      scoreCount += anime.score || 0;
+      scoreCount += anime.score ?? 0;
     });
     const averageScore =
       (scoreCount / data.pagination?.items?.count).toFixed(2) || "0.00"; // Média das avaliações
@@ -63,7 +63,9 @@ export const getTopAnimesSeason = async (
     );
 
     // Retorna os dados em ordem descrescente pela nota
-    const topAnimes = data.data.sort((a, b) => (b.score || 0) - (a.score || 0));
+    const topAnimes = data.data?.sort(
+      (a, b) => (b.score ?? 0) - (a.score ?? 0)
+    );
 
     setSuccessMessage(res, {
       topAnimes,
@@ -73,22 +75,57 @@ export const getTopAnimesSeason = async (
   }
 };
 
+// Busca animes ou mangás em alta
 export const getTrendingData = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
+  const type = req.params.type;
+
+  // Inicia uma data limite
   const startDateLimit = new Date();
   startDateLimit.setMonth(startDateLimit.getMonth() - 6);
 
-  const startDate = `${startDateLimit.getFullYear()}-0${startDateLimit.getMonth()}-01`;
-  console.log(`Data de começo para filtro: ${startDate}`);
+  const month = String(startDateLimit.getMonth() + 1).padStart(2, "0");
 
-  const data = await fetchJikanResponse<JikanMangaListResponse>(
-    `https://api.jikan.moe/v4/manga?start_date=${startDate}&order_by=popularity`
+  // String para start_date do rota (YYYY-MM-DD)
+  const startDate = `${startDateLimit.getFullYear()}-${month}-01`;
+
+  const data = await fetchJikanResponse<
+    JikanMangaListResponse | JikanAnimeListResponse
+  >(
+    `https://api.jikan.moe/v4/${type}?start_date=${startDate}&order_by=popularity`
   );
 
+  const trendingScore = (
+    score: number,
+    favorites: number,
+    popularity: number,
+    members: number
+  ): number => {
+    return score * 0.4 + favorites * 0.2 + popularity * 0.2 + members * 0.2;
+  };
+
+  const trendingData = data.data
+    .filter((item) => item.score !== null && item)
+    .sort(
+      (a, b) =>
+        trendingScore(
+          b.score ?? 0,
+          b.favorites ?? 0,
+          b.popularity ?? 0,
+          b.members ?? 0
+        ) -
+        trendingScore(
+          a.score ?? 0,
+          a.favorites ?? 0,
+          a.popularity ?? 0,
+          a.members ?? 0
+        )
+    );
+
   setSuccessMessage(res, {
-    data,
+    trendingData,
   });
 };

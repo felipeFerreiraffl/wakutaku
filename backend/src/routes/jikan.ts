@@ -120,6 +120,6 @@ router.get("/season_stats", globalRateLimiter, getSeasonStats);
 router.get("/season_top", globalRateLimiter, getTopAnimesSeason);
 
 // Mangás ou animes tendências (em alta)
-router.get("/trending", globalRateLimiter, getTrendingData);
+router.get("/trending/:type", globalRateLimiter, getTrendingData);
 
 export default router;
