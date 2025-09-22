@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { setSuccessMessage } from "../middlewares/statusHandler.js";
 import type {
+  JikanAnimeListResponse,
   JikanMangaListResponse,
   JikanSeasonResponse,
 } from "../types/jikanTypes.js";
@@ -44,6 +45,27 @@ export const getSeasonStats = async (
       frequentGenre,
       frequentDemography,
       averageScore,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTopAnimesSeason = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const data = await fetchJikanResponse<JikanSeasonResponse>(
+      "https://api.jikan.moe/v4/seasons/now"
+    );
+
+    // Retorna os dados em ordem descrescente pela nota
+    const topAnimes = data.data.sort((a, b) => (b.score || 0) - (a.score || 0));
+
+    setSuccessMessage(res, {
+      topAnimes,
     });
   } catch (error) {
     next(error);

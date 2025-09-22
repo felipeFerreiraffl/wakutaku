@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getSeasonStats } from "../controllers/jikan.js";
+import { getSeasonStats, getTopAnimesSeason } from "../controllers/jikan.js";
 import jikanProxy from "../middlewares/proxy.js";
 import {
   globalRateLimiter,
@@ -111,5 +111,8 @@ router.get("/manga/:id/statistics", globalRateLimiter, jikanProxy);
 
 // Estatísticas da temporada
 router.get("/season_stats", globalRateLimiter, getSeasonStats);
+
+// Estatísticas da temporada
+router.get("/season_top", globalRateLimiter, getTopAnimesSeason);
 
 export default router;
