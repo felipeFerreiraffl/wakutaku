@@ -81,51 +81,60 @@ export const getTrendingData = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const type = req.params.type;
+  try {
+    // Pega o query para o tipo de anime/mangá
+    const type = req.params.type;
 
-  // Inicia uma data limite
-  const startDateLimit = new Date();
-  startDateLimit.setMonth(startDateLimit.getMonth() - 6);
+    // Inicia uma data limite
+    const startDateLimit = new Date();
+    startDateLimit.setMonth(startDateLimit.getMonth() - 6);
 
-  const month = String(startDateLimit.getMonth() + 1).padStart(2, "0");
+    // Formatação do mês
+    const month = String(startDateLimit.getMonth() + 1).padStart(2, "0");
 
-  // String para start_date do rota (YYYY-MM-DD)
-  const startDate = `${startDateLimit.getFullYear()}-${month}-01`;
+    // String para start_date do rota (YYYY-MM-DD)
+    const startDate = `${startDateLimit.getFullYear()}-${month}-01`;
 
-  const data = await fetchJikanResponse<
-    JikanMangaListResponse | JikanAnimeListResponse
-  >(
-    `https://api.jikan.moe/v4/${type}?start_date=${startDate}&order_by=popularity`
-  );
-
-  const trendingScore = (
-    score: number,
-    favorites: number,
-    popularity: number,
-    members: number
-  ): number => {
-    return score * 0.4 + favorites * 0.2 + popularity * 0.2 + members * 0.2;
-  };
-
-  const trendingData = data.data
-    .filter((item) => item.score !== null && item)
-    .sort(
-      (a, b) =>
-        trendingScore(
-          b.score ?? 0,
-          b.favorites ?? 0,
-          b.popularity ?? 0,
-          b.members ?? 0
-        ) -
-        trendingScore(
-          a.score ?? 0,
-          a.favorites ?? 0,
-          a.popularity ?? 0,
-          a.members ?? 0
-        )
+    const data = await fetchJikanResponse<
+      JikanMangaListResponse | JikanAnimeListResponse
+    >(
+      `https://api.jikan.moe/v4/${type}?start_date=${startDate}&order_by=popularity`
     );
 
-  setSuccessMessage(res, {
-    trendingData,
-  });
+    // Cálculo de têndencia
+    const trendingScore = (
+      score: number,
+      favorites: number,
+      popularity: number,
+      members: number
+    ): number => {
+      return score * 0.4 + favorites * 0.2 + popularity * 0.2 + members * 0.2;
+    };
+
+    // Filtragem dos dados
+    const trendingData = data.data
+      .filter((item) => item.score !== null && item) // Apenas dados com score com valor
+      .sort(
+        // Ordenação dos dados
+        (a, b) =>
+          trendingScore(
+            b.score ?? 0,
+            b.favorites ?? 0,
+            b.popularity ?? 0,
+            b.members ?? 0
+          ) -
+          trendingScore(
+            a.score ?? 0,
+            a.favorites ?? 0,
+            a.popularity ?? 0,
+            a.members ?? 0
+          )
+      );
+
+    setSuccessMessage(res, {
+      trendingData,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
