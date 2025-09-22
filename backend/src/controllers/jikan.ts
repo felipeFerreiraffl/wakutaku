@@ -51,6 +51,7 @@ export const getSeasonStats = async (
   }
 };
 
+// Buscar os melhores animes da temporada atual
 export const getTopAnimesSeason = async (
   req: Request,
   res: Response,
@@ -70,4 +71,24 @@ export const getTopAnimesSeason = async (
   } catch (error) {
     next(error);
   }
+};
+
+export const getTrendingData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const startDateLimit = new Date();
+  startDateLimit.setMonth(startDateLimit.getMonth() - 6);
+
+  const startDate = `${startDateLimit.getFullYear()}-0${startDateLimit.getMonth()}-01`;
+  console.log(`Data de começo para filtro: ${startDate}`);
+
+  const data = await fetchJikanResponse<JikanMangaListResponse>(
+    `https://api.jikan.moe/v4/manga?start_date=${startDate}&order_by=popularity`
+  );
+
+  setSuccessMessage(res, {
+    data,
+  });
 };

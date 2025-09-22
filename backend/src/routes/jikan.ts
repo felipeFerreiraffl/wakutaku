@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { getSeasonStats, getTopAnimesSeason } from "../controllers/jikan.js";
+import {
+  getSeasonStats,
+  getTopAnimesSeason,
+  getTrendingData,
+} from "../controllers/jikan.js";
 import jikanProxy from "../middlewares/proxy.js";
 import {
   globalRateLimiter,
@@ -112,7 +116,10 @@ router.get("/manga/:id/statistics", globalRateLimiter, jikanProxy);
 // Estatísticas da temporada
 router.get("/season_stats", globalRateLimiter, getSeasonStats);
 
-// Estatísticas da temporada
+// Melhores animes da temporada
 router.get("/season_top", globalRateLimiter, getTopAnimesSeason);
+
+// Mangás ou animes tendências (em alta)
+router.get("/trending", globalRateLimiter, getTrendingData);
 
 export default router;
