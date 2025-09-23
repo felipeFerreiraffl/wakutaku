@@ -5,6 +5,9 @@
 /dist
 /build
 
+# Variáveis de ambiente
+.env*
+
 # IDF
 /.vscode
 

@@ -1,9 +1,9 @@
 import { createProxyMiddleware } from "http-proxy-middleware";
-import type { Request, Response, NextFunction } from "express";
+import { env } from "../config/env.js";
 
 // Configuração do middleware do proxy da Jikan
 const jikanProxy = createProxyMiddleware({
-  target: "https://api.jikan.moe/v4",
+  target: env.API_URL,
   changeOrigin: true, // Muda o header Host para o target
   pathRewrite: {
     "^/api": "",

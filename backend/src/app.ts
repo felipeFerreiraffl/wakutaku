@@ -1,6 +1,9 @@
+import dotenv from "dotenv";
 import express from "express";
-import jikanRouter from "./routes/jikan.js";
 import { errorHandler, notFoundHandler } from "./middlewares/statusHandler.js";
+import jikanRouter from "./routes/jikan.js";
+
+dotenv.config();
 
 const app = express();
 app.use(express.json());

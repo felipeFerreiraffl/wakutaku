@@ -23,8 +23,12 @@
     "lib": ["ES2022"],
 
     /* Raiz */
-    "rootDir": "./src"
+    "rootDir": "./src",
+
+    /* Extras */
+    "declaration": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/types/**/*.d.ts"],
   "exclude": ["node_modules/"]
 }
