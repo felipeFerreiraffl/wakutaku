@@ -1,10 +1,11 @@
-import { envVars } from "../types/env.js";
+import { env } from "../types/env.type.js";
 
-export const env = {
-  NODE_ENV: envVars.NODE_ENV,
-  API_URL: envVars.API_URL,
-  PORT: envVars.PORT,
-  REDIS_URL: envVars.REDIS_URL,
-  REDIS_USERNAME: envVars.REDIS_USERNAME,
-  REDIS_PASSWORD: envVars.REDIS_PASSWORD,
+// Variáveis do .env
+export const envVar = {
+  PORT: env.PORT,
+  JIKAN_API_URL: env.JIKAN_API_URL,
+  NODE_ENV: env.NODE_ENV,
+  REDIS_URL: env.REDIS_URL,
+  REDIS_USERNAME: env.REDIS_USERNAME,
+  REDIS_PASSWORD: env.REDIS_PASSWORD,
 };
