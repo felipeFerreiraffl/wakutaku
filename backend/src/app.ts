@@ -1,16 +1,49 @@
 import "./utils/envLoader";
 import express from "express";
-import { errorHandler, notFoundHandler } from "./middlewares/statusHandler.js";
+import {
+  errorHandler,
+  notFoundHandler,
+  setSuccessMessage,
+} from "./middlewares/statusHandler.js";
 import jikanRouter from "./routes/jikan.js";
+import cacheRouter from "./routes/cache.js";
+import {
+  connectToRedis,
+  disconnectFromRedis,
+} from "./config/redisConnection.js";
 
 const app = express();
 app.use(express.json());
 
 // Rotas
-app.use("/api", jikanRouter);
 
-// Middleware de status
-app.use(errorHandler);
-app.use(notFoundHandler);
+async function startServer() {
+  try {
+    console.log("🔄️ Conectando-se ao Redis...");
+    await connectToRedis();
+    console.log(`✅ Conexão feita com sucesso`);
+
+    // Rotas da Jikan
+    app.use("/api", jikanRouter);
+
+    // Rota do estado do cache Redis
+    app.use("/api/cache", cacheRouter);
+
+    // Middleware de status
+    app.use(errorHandler);
+    app.use(notFoundHandler);
+  } catch (error) {
+    console.error(`❌ Erro ao inicar o servidor: ${error}`);
+    process.exit(1);
+  }
+}
+
+process.on("SIGINT", async () => {
+  console.log("🛑 Fechando aplicação...");
+  await disconnectFromRedis();
+  process.exit(0);
+});
+
+startServer();
 
 export default app;
