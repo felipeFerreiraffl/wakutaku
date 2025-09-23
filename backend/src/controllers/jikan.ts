@@ -7,6 +7,9 @@ import type {
 } from "../types/jikanTypes.js";
 import { fetchJikanResponse } from "../utils/fetchJikan.js";
 import { mostFrequentTheme } from "../utils/mostFrequentData.js";
+import { envVar } from "../config/envConfig.js";
+
+const API_URL = envVar.JIKAN_API_URL;
 
 // Estatísticas da temporada atual
 export const getSeasonStats = async (
@@ -16,7 +19,7 @@ export const getSeasonStats = async (
 ): Promise<void> => {
   try {
     const data = await fetchJikanResponse<JikanSeasonResponse>(
-      "https://api.jikan.moe/v4/seasons/now"
+      `${API_URL}/seasons/now`
     );
 
     // Total de animes na temporada
@@ -59,7 +62,7 @@ export const getTopAnimesSeason = async (
 ): Promise<void> => {
   try {
     const data = await fetchJikanResponse<JikanSeasonResponse>(
-      "https://api.jikan.moe/v4/seasons/now"
+      `${API_URL}/seasons/now`
     );
 
     // Retorna os dados em ordem descrescente pela nota
@@ -97,9 +100,7 @@ export const getTrendingData = async (
 
     const data = await fetchJikanResponse<
       JikanMangaListResponse | JikanAnimeListResponse
-    >(
-      `https://api.jikan.moe/v4/${type}?start_date=${startDate}&order_by=popularity`
-    );
+    >(`${API_URL}/${type}?start_date=${startDate}&order_by=popularity`);
 
     // Cálculo de têndencia
     const trendingScore = (
