@@ -1,9 +1,8 @@
 import { createProxyMiddleware } from "http-proxy-middleware";
-import { env } from "../config/env.js";
 
 // Configuração do middleware do proxy da Jikan
 const jikanProxy = createProxyMiddleware({
-  target: env.API_URL,
+  target: "env.API_URL",
   changeOrigin: true, // Muda o header Host para o target
   pathRewrite: {
     "^/api": "",
