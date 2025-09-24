@@ -26,11 +26,22 @@ export const getCacheStatus = async (
   }
 };
 
-export const getCacheKeys = (
+export const getCacheKeys = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  try {
+    const { redisClient } = await import("../config/redisConnection.js");
+    const keys = await redisClient.keys("");
+
+    setSuccessMessage(res, {
+      keys,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // Deleta o cache Redis inteiro
 export const deleteCache = async (
