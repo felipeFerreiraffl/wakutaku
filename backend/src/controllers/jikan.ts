@@ -1,5 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
+import { envVar } from "../config/envConfig.js";
 import { setSuccessMessage } from "../middlewares/statusHandler.js";
+import { CacheService } from "../services/cacheService.js";
 import type {
   JikanAnimeListResponse,
   JikanMangaListResponse,
@@ -7,8 +9,6 @@ import type {
 } from "../types/jikanTypes.js";
 import { fetchJikanResponse } from "../utils/fetchJikan.js";
 import { mostFrequentTheme } from "../utils/mostFrequentData.js";
-import { envVar } from "../config/envConfig.js";
-import { CacheService } from "../services/cacheService.js";
 
 const API_URL = envVar.JIKAN_API_URL;
 
@@ -21,6 +21,7 @@ export const getSeasonStats = async (
   try {
     const cacheKey = CacheService.cacheKeys.SEASON_STATS;
 
+    // getCachedData(cacheKey, res);
     const cachedData = await CacheService.get<any>(cacheKey);
     if (cachedData) {
       res.setHeader("X-Cache", "HIT");
@@ -114,7 +115,10 @@ export const getTrendingData = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const cacheKey = CacheService.cacheKeys.TRENDING_DATA;
+    // Pega o query para o tipo de anime/mangá
+    const type = req.params.type as "anime" | "manga";
+
+    const cacheKey = `${CacheService.cacheKeys.TRENDING_DATA}:${type}`;
 
     const cachedData = await CacheService.get<any>(cacheKey);
     if (cachedData) {
@@ -122,9 +126,6 @@ export const getTrendingData = async (
       setSuccessMessage(res, cachedData);
       return;
     }
-
-    // Pega o query para o tipo de anime/mangá
-    const type = req.params.type;
 
     // Inicia uma data limite
     const startDateLimit = new Date();
