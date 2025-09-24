@@ -2,6 +2,18 @@ import { redisClient } from "../config/redisConnection.js";
 
 // Métodos de cache Redis reutilizável
 export class CacheService {
+  static readonly cacheKeys = {
+    SEASON_STATS: "season:stats",
+    SEASON_TOP: "season:top",
+    TRENDING_DATA: "trending:data",
+  };
+
+  static readonly ttl = {
+    SHORT: 5 * 60, // 5 minutos,
+    MEDIUM: 30 * 60, // 30 minutos
+    LARGE: 24 * 60 * 60, // 24 horas
+  };
+
   // Salva os dados no cache
   static async set(
     key: string,
