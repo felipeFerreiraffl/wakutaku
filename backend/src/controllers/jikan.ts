@@ -19,11 +19,10 @@ export const getSeasonStats = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const cacheKey = "season-stats";
+    const cacheKey = CacheService.cacheKeys.SEASON_STATS;
 
     const cachedData = await CacheService.get<any>(cacheKey);
     if (cachedData) {
-      console.log(`🔌[CACHE] Retornando dados do cache`);
       res.setHeader("X-Cache", "HIT");
       setSuccessMessage(res, cachedData);
       return;
@@ -77,7 +76,7 @@ export const getTopAnimesSeason = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const cacheKey = "top-animes-season";
+    const cacheKey = CacheService.cacheKeys.SEASON_TOP;
 
     const cachedData = await CacheService.get<any>(cacheKey);
     if (cachedData) {
@@ -101,6 +100,7 @@ export const getTopAnimesSeason = async (
 
     await CacheService.set(cacheKey, result, 600);
 
+    res.setHeader("X-Cache", "MISS");
     setSuccessMessage(res, result);
   } catch (error) {
     next(error);
@@ -114,6 +114,15 @@ export const getTrendingData = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const cacheKey = CacheService.cacheKeys.TRENDING_DATA;
+
+    const cachedData = await CacheService.get<any>(cacheKey);
+    if (cachedData) {
+      res.setHeader("X-Cache", "HIT");
+      setSuccessMessage(res, cachedData);
+      return;
+    }
+
     // Pega o query para o tipo de anime/mangá
     const type = req.params.type;
 
@@ -161,9 +170,12 @@ export const getTrendingData = async (
           )
       );
 
-    setSuccessMessage(res, {
-      trendingData,
-    });
+    const result = trendingData;
+
+    await CacheService.set(cacheKey, result, 600);
+
+    res.setHeader("X-Cache", "MISS");
+    setSuccessMessage(res, result);
   } catch (error) {
     next(error);
   }
