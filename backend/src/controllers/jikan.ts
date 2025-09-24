@@ -8,6 +8,7 @@ import type {
 import { fetchJikanResponse } from "../utils/fetchJikan.js";
 import { mostFrequentTheme } from "../utils/mostFrequentData.js";
 import { envVar } from "../config/envConfig.js";
+import { CacheService } from "../services/cacheService.js";
 
 const API_URL = envVar.JIKAN_API_URL;
 
@@ -18,6 +19,16 @@ export const getSeasonStats = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const cacheKey = "season-stats";
+
+    const cachedData = await CacheService.get<any>(cacheKey);
+    if (cachedData) {
+      console.log(`🔌[CACHE] Retornando dados do cache`);
+      res.setHeader("X-Cache", "HIT");
+      setSuccessMessage(res, cachedData);
+      return;
+    }
+
     const data = await fetchJikanResponse<JikanSeasonResponse>(
       `${API_URL}/seasons/now`
     );
@@ -43,12 +54,17 @@ export const getSeasonStats = async (
     const averageScore =
       (scoreCount / data.pagination?.items?.count).toFixed(2) || "0.00"; // Média das avaliações
 
-    setSuccessMessage(res, {
+    const result = {
       totalCount,
       frequentGenre,
       frequentDemography,
       averageScore,
-    });
+    };
+
+    await CacheService.set(cacheKey, result, 600);
+
+    res.setHeader("X-Cache", "MISS");
+    setSuccessMessage(res, result);
   } catch (error) {
     next(error);
   }
@@ -61,6 +77,15 @@ export const getTopAnimesSeason = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const cacheKey = "top-animes-season";
+
+    const cachedData = await CacheService.get<any>(cacheKey);
+    if (cachedData) {
+      res.setHeader("X-Cache", "HIT");
+      setSuccessMessage(res, cachedData);
+      return;
+    }
+
     const data = await fetchJikanResponse<JikanSeasonResponse>(
       `${API_URL}/seasons/now`
     );
@@ -70,9 +95,13 @@ export const getTopAnimesSeason = async (
       (a, b) => (b.score ?? 0) - (a.score ?? 0)
     );
 
-    setSuccessMessage(res, {
+    const result = {
       topAnimes,
-    });
+    };
+
+    await CacheService.set(cacheKey, result, 600);
+
+    setSuccessMessage(res, result);
   } catch (error) {
     next(error);
   }

@@ -1,16 +1,13 @@
 import "./utils/envLoader";
+
 import express from "express";
-import {
-  errorHandler,
-  notFoundHandler,
-  setSuccessMessage,
-} from "./middlewares/statusHandler.js";
-import jikanRouter from "./routes/jikan.js";
-import cacheRouter from "./routes/cache.js";
 import {
   connectToRedis,
   disconnectFromRedis,
 } from "./config/redisConnection.js";
+import { errorHandler, notFoundHandler } from "./middlewares/statusHandler.js";
+import cacheRouter from "./routes/cache.js";
+import jikanRouter from "./routes/jikan.js";
 
 const app = express();
 app.use(express.json());

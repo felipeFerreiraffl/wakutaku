@@ -1,25 +1,23 @@
 import type { Request, Response, NextFunction } from "express";
 import { setSuccessMessage } from "../middlewares/statusHandler.js";
+import { redisClient } from "../config/redisConnection.js";
 
 // Verificação do status do cacheRedis
 export const getCacheStatus = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
-    const { redisClient } = await import("../config/redisConnection.js");
-    const keyCount = await redisClient.dbSize(); // Número de chaves no cache
-    const info = await redisClient.info("memory"); // Uso de memória
+    const keyCount = await redisClient.dbSize(); // Lista o tamanho do banco de dados
+    const info = await redisClient.info("memory"); // Recebe as informações da memória
 
     setSuccessMessage(res, {
-      cache: {
-        connected: redisClient.isReady,
-        keys: keyCount,
-        memory: info
-          .split("\r\n")
-          .find((line) => line.startsWith("used_memory_human") || "N/A"),
-      },
+      connected: redisClient.isReady,
+      keyCount,
+      memory: info
+        .split("\r\n")
+        .find((line) => line.startsWith("used-memory-human") || "N/A"),
     });
   } catch (error) {
     next(error);
@@ -30,13 +28,15 @@ export const getCacheKeys = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
-    const { redisClient } = await import("../config/redisConnection.js");
-    const keys = await redisClient.keys("");
+    const pattern = (req.query.pattern as string) || "*"; // Pega o padrão das chaves
+    const keys = await redisClient.keys(pattern); // Busca as chaves do banco de dados
 
     setSuccessMessage(res, {
-      keys,
+      keys: keys.sort(),
+      total: keys.length,
+      pattern,
     });
   } catch (error) {
     next(error);
@@ -48,9 +48,8 @@ export const deleteCache = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
-    const { redisClient } = await import("../config/redisConnection.js");
     await redisClient.flushDb(); // Limpa todo o banco de dados
 
     setSuccessMessage(res, {
@@ -61,8 +60,23 @@ export const deleteCache = async (
   }
 };
 
-export const deleteCacheByKey = (
+// Exclui uma chave do cache Redis
+export const deleteCacheByKey = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+): Promise<void> => {
+  try {
+    const key = req.params.key ?? ""; // Pega a chave dos parâmetros
+    const deleted = await redisClient.del(key); // Deleta a chave, caso exista
+
+    setSuccessMessage(res, {
+      message: deleted
+        ? `Chave ${key} deletada com sucesso`
+        : `Chave ${key} não encontrada`,
+      deleted: deleted === 1,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
