@@ -19,16 +19,6 @@ export const getSeasonStats = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const cacheKey = CacheService.cacheKeys.SEASON_STATS;
-
-    // getCachedData(cacheKey, res);
-    const cachedData = await CacheService.get<any>(cacheKey);
-    if (cachedData) {
-      res.setHeader("X-Cache", "HIT");
-      setSuccessMessage(res, cachedData);
-      return;
-    }
-
     const data = await fetchJikanResponse<JikanSeasonResponse>(
       `${API_URL}/seasons/now`
     );
@@ -54,17 +44,12 @@ export const getSeasonStats = async (
     const averageScore =
       (scoreCount / data.pagination?.items?.count).toFixed(2) || "0.00"; // Média das avaliações
 
-    const result = {
+    setSuccessMessage(res, {
       totalCount,
       frequentGenre,
       frequentDemography,
       averageScore,
-    };
-
-    await CacheService.set(cacheKey, result, 600);
-
-    res.setHeader("X-Cache", "MISS");
-    setSuccessMessage(res, result);
+    });
   } catch (error) {
     next(error);
   }
@@ -77,15 +62,6 @@ export const getTopAnimesSeason = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const cacheKey = CacheService.cacheKeys.SEASON_TOP;
-
-    const cachedData = await CacheService.get<any>(cacheKey);
-    if (cachedData) {
-      res.setHeader("X-Cache", "HIT");
-      setSuccessMessage(res, cachedData);
-      return;
-    }
-
     const data = await fetchJikanResponse<JikanSeasonResponse>(
       `${API_URL}/seasons/now`
     );
@@ -95,14 +71,7 @@ export const getTopAnimesSeason = async (
       (a, b) => (b.score ?? 0) - (a.score ?? 0)
     );
 
-    const result = {
-      topAnimes,
-    };
-
-    await CacheService.set(cacheKey, result, 600);
-
-    res.setHeader("X-Cache", "MISS");
-    setSuccessMessage(res, result);
+    setSuccessMessage(res, topAnimes);
   } catch (error) {
     next(error);
   }
@@ -117,15 +86,6 @@ export const getTrendingData = async (
   try {
     // Pega o query para o tipo de anime/mangá
     const type = req.params.type as "anime" | "manga";
-
-    const cacheKey = `${CacheService.cacheKeys.TRENDING_DATA}:${type}`;
-
-    const cachedData = await CacheService.get<any>(cacheKey);
-    if (cachedData) {
-      res.setHeader("X-Cache", "HIT");
-      setSuccessMessage(res, cachedData);
-      return;
-    }
 
     // Inicia uma data limite
     const startDateLimit = new Date();
@@ -171,12 +131,7 @@ export const getTrendingData = async (
           )
       );
 
-    const result = trendingData;
-
-    await CacheService.set(cacheKey, result, 600);
-
-    res.setHeader("X-Cache", "MISS");
-    setSuccessMessage(res, result);
+    setSuccessMessage(res, trendingData);
   } catch (error) {
     next(error);
   }

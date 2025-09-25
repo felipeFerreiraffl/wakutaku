@@ -5,10 +5,7 @@ import {
   getTrendingData,
 } from "../controllers/jikan.js";
 import jikanProxy from "../middlewares/proxy.js";
-import {
-  globalRateLimiter,
-  searchRateLimiter,
-} from "../middlewares/rateLimiter.js";
+import { globalRateLimiter } from "../middlewares/rateLimiter.js";
 import { conditionalRateLimiter } from "../utils/conditionalRateLimiter.js";
 
 // Rota do Express

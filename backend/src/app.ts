@@ -18,13 +18,14 @@ async function startServer() {
   try {
     console.log("🔄️ Conectando-se ao Redis...");
     await connectToRedis();
-    console.log(`✅ Conexão feita com sucesso`);
 
-    // Rotas da Jikan
-    app.use("/api", jikanRouter);
+    console.log(`✅ Conexão feita com sucesso`);
 
     // Rota do estado do cache Redis
     app.use("/api/cache", cacheRouter);
+
+    // Rotas da Jikan
+    app.use("/api", jikanRouter);
 
     // Middleware de status
     app.use(errorHandler);
