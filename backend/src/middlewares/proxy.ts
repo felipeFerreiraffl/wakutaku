@@ -87,7 +87,7 @@ const jikanProxy = createProxyMiddleware({
             if (
               jsonData.error ||
               jsonData.success === false ||
-              res.statusCode === 404
+              res.statusCode >= 400
             ) {
               console.warn(`[PROXY CACHE] Erro da API: ${res.statusCode}`);
               return response;
