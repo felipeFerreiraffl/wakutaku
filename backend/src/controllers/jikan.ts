@@ -19,6 +19,22 @@ export const getSeasonStats = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const cacheKey = `season_stats:${req.originalUrl}`;
+    const cacheData = await CacheService.getCache(cacheKey);
+    const ttl = CacheService.TTL.SHORT;
+
+    if (cacheData) {
+      console.log(`[CUSTOM CACHE] HIT: ${cacheKey}`);
+
+      res.setHeader("X-Cache", "HIT");
+      res.setHeader("X-Cache-Key", cacheKey);
+      res.setHeader("X-Cache-TTL", ttl);
+      res.setHeader("X-Cache-Source", "Redis");
+
+      setSuccessMessage(res, cacheData);
+      return;
+    }
+
     const data = await fetchJikanResponse<JikanSeasonResponse>(
       `${API_URL}/seasons/now`
     );
@@ -42,14 +58,24 @@ export const getSeasonStats = async (
       scoreCount += anime.score ?? 0;
     });
     const averageScore =
-      (scoreCount / data.pagination?.items?.count).toFixed(2) || "0.00"; // Média das avaliações
+      Number((scoreCount / data.pagination?.items?.count).toFixed(2)) ?? 0.0; // Média das avaliações
 
-    setSuccessMessage(res, {
+    const result = {
       totalCount,
       frequentGenre,
       frequentDemography,
       averageScore,
-    });
+    };
+
+    await CacheService.setCache(cacheKey, result, ttl);
+
+    res.setHeader("X-Cache", "MISS");
+    res.setHeader("X-Cache-Key", cacheKey);
+    res.setHeader("X-Cache-TTL", ttl);
+    res.setHeader("X-Cache-Source", "Jikan-API");
+
+    console.log(`[CUSTOM CACHE] Salvando: ${cacheKey} (TTL: ${ttl}s)`);
+    setSuccessMessage(res, result);
   } catch (error) {
     next(error);
   }
@@ -62,6 +88,22 @@ export const getTopAnimesSeason = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const cacheKey = `season_top:${req.originalUrl}`;
+    const cacheData = await CacheService.getCache(cacheKey);
+    const ttl = CacheService.TTL.SHORT;
+
+    if (cacheData) {
+      console.log(`[CUSTOM CACHE] HIT: ${cacheKey}`);
+
+      res.setHeader("X-Cache", "HIT");
+      res.setHeader("X-Cache-Key", cacheKey);
+      res.setHeader("X-Cache-TTL", ttl);
+      res.setHeader("X-Cache-Source", "Redis");
+
+      setSuccessMessage(res, cacheData);
+      return;
+    }
+
     const data = await fetchJikanResponse<JikanSeasonResponse>(
       `${API_URL}/seasons/now`
     );
@@ -70,6 +112,15 @@ export const getTopAnimesSeason = async (
     const topAnimes = data.data?.sort(
       (a, b) => (b.score ?? 0) - (a.score ?? 0)
     );
+
+    await CacheService.setCache(cacheKey, topAnimes, ttl);
+
+    res.setHeader("X-Cache", "MISS");
+    res.setHeader("X-Cache-Key", cacheKey);
+    res.setHeader("X-Cache-TTL", ttl);
+    res.setHeader("X-Cache-Source", "Jikan-API");
+
+    console.log(`[CUSTOM CACHE] Salvando: ${cacheKey} (TTL: ${ttl}s)`);
 
     setSuccessMessage(res, topAnimes);
   } catch (error) {
@@ -86,6 +137,22 @@ export const getTrendingData = async (
   try {
     // Pega o query para o tipo de anime/mangá
     const type = req.params.type as "anime" | "manga";
+
+    const cacheKey = `trending_${type}:${req.originalUrl}`;
+    const cacheData = await CacheService.getCache(cacheKey);
+    const ttl = CacheService.TTL.SHORT;
+
+    if (cacheData) {
+      console.log(`[CUSTOM CACHE] HIT: ${cacheKey}`);
+
+      res.setHeader("X-Cache", "HIT");
+      res.setHeader("X-Cache-Key", cacheKey);
+      res.setHeader("X-Cache-TTL", ttl);
+      res.setHeader("X-Cache-Source", "Redis");
+
+      setSuccessMessage(res, cacheData);
+      return;
+    }
 
     // Inicia uma data limite
     const startDateLimit = new Date();
@@ -130,6 +197,15 @@ export const getTrendingData = async (
             a.members ?? 0
           )
       );
+
+    await CacheService.setCache(cacheKey, trendingData, ttl);
+
+    res.setHeader("X-Cache", "MISS");
+    res.setHeader("X-Cache-Key", cacheKey);
+    res.setHeader("X-Cache-TTL", ttl);
+    res.setHeader("X-Cache-Source", "Jikan-API");
+
+    console.log(`[CUSTOM CACHE] Salvando: ${cacheKey} (TTL: ${ttl}s)`);
 
     setSuccessMessage(res, trendingData);
   } catch (error) {
