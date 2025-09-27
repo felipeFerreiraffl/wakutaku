@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { redisClient } from "../config/redisConnection.js";
 import { setSuccessMessage } from "../middlewares/statusHandler.js";
 import { CacheService } from "../services/cacheService.js";
+import { envVar } from "../config/envConfig.js";
 
 export const getCacheStatus = async (
   req: Request,
@@ -14,26 +15,35 @@ export const getCacheStatus = async (
         status: "disconnected",
         message: "Redis não está conectado",
       });
+      return;
     }
 
     const totalKeys = await redisClient.dbSize();
-    const info = await redisClient.info();
 
-    console.log(`Informações: ${[info]}`);
+    // Mostra mais detalhes em produção
+    if (envVar.NODE_ENV === "development") {
+      const info = await redisClient.info();
 
-    // Informações básicas
-    const uptime = info.match(/uptime_in_days:(\d+)/)?.[1];
-    const uptimeInSeconds = info.match(/uptime_in_seconds:(\d+)/)?.[1];
-    const memoryUsed = info.match(/used_memory_human:([^\r\n]+)/)?.[1];
-    const version = info.match(/redis_version:([^\r\n]+)/)?.[1];
+      // Informações básicas
+      const uptime = info.match(/uptime_in_days:(\d+)/)?.[1];
+      const memoryUsed = info.match(/used_memory_human:([^\r\n]+)/)?.[1];
+      const version = info.match(/redis_version:([^\r\n]+)/)?.[1];
+
+      setSuccessMessage(res, {
+        status: "connected",
+        totalKeys,
+        uptime: `${uptime} dias`,
+        memoryUsed,
+        version,
+      });
+
+      return;
+    }
 
     setSuccessMessage(res, {
-      status: redisClient.isOpen && "connected",
+      status: "connected",
       totalKeys,
-      uptime: `${uptime} dias`,
-      uptimeInSeconds: `${uptimeInSeconds} segundos`,
-      memoryUsed,
-      version,
+      environment: "production",
     });
   } catch (error) {
     next(error);
@@ -47,9 +57,41 @@ export const getCacheKeys = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const keys = (await redisClient.keys("*")) ?? "N/A";
+    // Bloqueia em ambiente de desenvolvimento
+    if (envVar.NODE_ENV !== "development") {
+      setSuccessMessage(res, {
+        error: `Busca por chaves apenas em ambiente de desenvolvimento`,
+      });
+      return;
+    }
 
-    setSuccessMessage(res, keys);
+    const keys: string[] = [];
+    let cursor = "0";
+
+    do {
+      const result = await redisClient.scan(cursor, {
+        MATCH: "*", // Padrão de chaves (tudo)
+        COUNT: 100, // 100 de uma vez
+      });
+
+      cursor = result.cursor;
+      keys.push(...result.keys);
+
+      if (keys.length > 1000) {
+        setSuccessMessage(res, {
+          keys: keys.slice(0, 1000), // MAX = 1000
+          total: keys.length,
+          truncated: true,
+          message: "Resultado truncado para 1000 chaves",
+        });
+        return;
+      }
+    } while (cursor !== "0");
+
+    setSuccessMessage(res, {
+      keys,
+      total: keys.length,
+    });
   } catch (error) {
     next(error);
   }
@@ -62,12 +104,42 @@ export const getCacheKeysByPattern = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    if (envVar.NODE_ENV !== "development") {
+      setSuccessMessage(res, {
+        error:
+          "Busca de chaves por padrão apenas em ambiente de desenvolvimento",
+      });
+      return;
+    }
+
     const pattern = req.params.pattern ?? "*";
-    console.log(`[CACHE] Padrão da chave de cache: ${pattern}`);
 
-    const keysFound = await redisClient.keys(pattern);
+    if (pattern === "*" && String(envVar.NODE_ENV) === "production") {
+      setSuccessMessage(res, { error: "Padrão * não permitido" });
+      return;
+    }
 
-    setSuccessMessage(res, { keys: keysFound });
+    const keys: string[] = [];
+    let cursor = "0";
+
+    do {
+      const result = await redisClient.scan(cursor, {
+        MATCH: "*", // Padrão de chaves (tudo)
+        COUNT: 100, // 100 de uma vez
+      });
+
+      cursor = result.cursor;
+      keys.push(...result.keys);
+
+      if (keys.length > 500) break; // Limite menor
+    } while (cursor !== "0");
+
+    setSuccessMessage(res, {
+      pattern,
+      keys,
+      total: keys.length,
+      truncated: keys.length >= 500,
+    });
   } catch (error) {
     next(error);
   }
@@ -80,11 +152,31 @@ export const clearCache = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const deleted = await redisClient.flushDb();
+    if (envVar.NODE_ENV !== "development") {
+      setSuccessMessage(res, {
+        error: "Limpeza completa apenas em ambiente de  desenvolvimento",
+      });
+      return;
+    }
+
+    // Confirmação de limpeza do cache
+    const confirm = req.query.confirm as string;
+    if (confirm !== "yes") {
+      setSuccessMessage(res, {
+        error: "Confirmação necessária",
+        message: "Adicione ?confirm=yes",
+        warning: "Esta operação irá deletar TODOS os dados",
+      });
+      return;
+    }
+
+    const totalKeysBefore = await redisClient.dbSize();
+    await redisClient.flushDb();
 
     setSuccessMessage(res, {
-      deleted,
       message: "Cache apagado com sucesso",
+      keysDeleted: totalKeysBefore,
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     next(error);
@@ -98,17 +190,62 @@ export const clearCacheKeyByPattern = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const pattern = req.params.pattern ?? "*";
-    const keys = await redisClient.keys(pattern);
+    if (envVar.NODE_ENV !== "development") {
+      setSuccessMessage(res, {
+        error:
+          "Limpeza de chaves por padrão apenas em ambiente de desenvolvimento",
+      });
+      return;
+    }
 
-    const deleted = await redisClient.del(keys);
+    const pattern = req.params.pattern;
+    if (!pattern || pattern === "*") {
+      setSuccessMessage(res, {
+        error: "Padrão específico é obrigatório (não use '*')",
+      });
+      return;
+    }
+
+    const keys: string[] = [];
+    let cursor = "0";
+
+    do {
+      const result = await redisClient.scan(cursor, {
+        MATCH: "*", // Padrão de chaves (tudo)
+        COUNT: 50, // 100 de uma vez
+      });
+
+      cursor = result.cursor;
+      keys.push(...result.keys);
+
+      if (keys.length > 200) break; // Limite menor
+    } while (cursor !== "0");
+
+    if (keys.length === 0) {
+      setSuccessMessage(res, {
+        message: "Nenhuma chave encontrada",
+        pattern,
+        deleted: 0,
+      });
+      return;
+    }
+
+    // Limpeza em lote
+    const batchSize = 50;
+    let totalDeleted = 0;
+
+    for (let i = 0; i < keys.length; i += batchSize) {
+      const batch = keys.slice(i, i + batchSize); // Limpa de 50 em 50
+      const deleted = await redisClient.del([...batch]);
+      totalDeleted += deleted;
+    }
 
     setSuccessMessage(res, {
-      deleted: deleted === 1 ? true : false,
       message: "Chave(s) deletada(s) com sucesso",
       patternDeleted: pattern,
-      keysDeleted: keys.length,
-      keys: [...keys],
+      keysFound: keys.length,
+      keysDeleted: totalDeleted,
+      keys: keys.slice(0, 20),
     });
   } catch (error) {
     next(error);
