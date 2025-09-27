@@ -247,7 +247,7 @@ export const clearCacheKeyByPattern = async (
       keysDeleted: totalDeleted,
       keys: keys.slice(0, 20),
     });
-  } catch (error) {
+  } catch (error) { 
     next(error);
   }
 };
