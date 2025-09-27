@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   clearCache,
+  clearCacheKeyByPattern,
   getCacheKeys,
   getCacheKeysByPattern,
   getCacheStatus,
@@ -12,5 +13,6 @@ router.get("/status", getCacheStatus);
 router.get("/keys", getCacheKeys);
 router.get("/keys/:pattern", getCacheKeysByPattern);
 router.get("/clear", clearCache);
+router.get("/clear/:pattern", clearCacheKeyByPattern);
 
 export default router;

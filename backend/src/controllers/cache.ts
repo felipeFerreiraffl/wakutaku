@@ -90,3 +90,27 @@ export const clearCache = async (
     next(error);
   }
 };
+
+// Deleta chaves de cache por pattern (padrão)
+export const clearCacheKeyByPattern = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const pattern = req.params.pattern ?? "*";
+    const keys = await redisClient.keys(pattern);
+
+    const deleted = await redisClient.del(keys);
+
+    setSuccessMessage(res, {
+      deleted: deleted === 1 ? true : false,
+      message: "Chave(s) deletada(s) com sucesso",
+      patternDeleted: pattern,
+      keysDeleted: keys.length,
+      keys: [...keys],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
