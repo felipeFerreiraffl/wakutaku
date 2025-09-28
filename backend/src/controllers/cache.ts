@@ -273,6 +273,8 @@ export const getCachePerformanceStats = async (
       info.match(/keyspace_misses:(\d+)/)?.[1] || "0"
     );
 
+    const totalRequests = keyspaceHits + keyspaceMisses;
+
     // Taxa de acerto
     const hitRate = parseInt(
       ((keyspaceHits / keyspaceMisses) * 100).toFixed(1)
@@ -290,6 +292,7 @@ export const getCachePerformanceStats = async (
 
     setSuccessMessage(res, {
       status,
+      totalRequests,
       keyspaceHits,
       keyspaceMisses,
       hitRate: `${hitRate}%`,
