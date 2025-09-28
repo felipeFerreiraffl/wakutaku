@@ -247,7 +247,52 @@ export const clearCacheKeyByPattern = async (
       keysDeleted: totalDeleted,
       keys: keys.slice(0, 20),
     });
-  } catch (error) { 
+  } catch (error) {
     next(error);
   }
+};
+
+// Busca estatísticas de performance
+export const getCachePerformanceStats = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const info = await redisClient.info();
+
+    console.log(info);
+
+    // Chaves encontradas com sucesso
+    const keyspaceHits = parseInt(
+      info.match(/keyspace_hits:(\d+)/)?.[1] || "0"
+    );
+
+    // Chaves não encontradas com sucesso
+    const keyspaceMisses = parseInt(
+      info.match(/keyspace_misses:(\d+)/)?.[1] || "0"
+    );
+
+    // Taxa de acerto
+    const hitRate = parseInt(
+      ((keyspaceHits / keyspaceMisses) * 100).toFixed(1)
+    );
+
+    // Verificação de saúde
+    const status =
+      hitRate >= 80
+        ? "Excelente"
+        : hitRate < 80 && hitRate >= 60
+        ? "Razoável"
+        : hitRate < 60 && hitRate >= 40
+        ? "Ruim"
+        : "Crítico";
+
+    setSuccessMessage(res, {
+      status,
+      keyspaceHits,
+      keyspaceMisses,
+      hitRate: `${hitRate}%`,
+    });
+  } catch (error) {}
 };
