@@ -21,7 +21,7 @@ export const getCacheStatus = async (
     const totalKeys = await redisClient.dbSize();
 
     // Mostra mais detalhes em produção
-    if (envVar.NODE_ENV === "development") {
+    if (envVar.NODE_ENV !== "production") {
       const info = await redisClient.info();
 
       // Informações básicas
@@ -58,9 +58,9 @@ export const getCacheKeys = async (
 ): Promise<void> => {
   try {
     // Bloqueia em ambiente de desenvolvimento
-    if (envVar.NODE_ENV !== "development") {
+    if (envVar.NODE_ENV === "production") {
       setSuccessMessage(res, {
-        error: `Busca por chaves apenas em ambiente de desenvolvimento`,
+        error: `Busca por chaves apenas em ambiente de desenvolvimento ou teste`,
       });
       return;
     }
@@ -104,20 +104,15 @@ export const getCacheKeysByPattern = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    if (envVar.NODE_ENV !== "development") {
+    if (envVar.NODE_ENV === "production") {
       setSuccessMessage(res, {
         error:
-          "Busca de chaves por padrão apenas em ambiente de desenvolvimento",
+          "Busca de chaves por padrão apenas em ambiente de desenvolvimento ou teste",
       });
       return;
     }
 
     const pattern = req.params.pattern ?? "*";
-
-    if (pattern === "*" && String(envVar.NODE_ENV) === "production") {
-      setSuccessMessage(res, { error: "Padrão * não permitido" });
-      return;
-    }
 
     const keys: string[] = [];
     let cursor = "0";
@@ -152,9 +147,9 @@ export const clearCache = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    if (envVar.NODE_ENV !== "development") {
+    if (envVar.NODE_ENV === "production") {
       setSuccessMessage(res, {
-        error: "Limpeza completa apenas em ambiente de  desenvolvimento",
+        error: "Limpeza completa apenas em ambiente de desenvolvimento o teste",
       });
       return;
     }
@@ -190,7 +185,7 @@ export const clearCacheKeyByPattern = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    if (envVar.NODE_ENV !== "development") {
+    if (envVar.NODE_ENV === "production") {
       setSuccessMessage(res, {
         error:
           "Limpeza de chaves por padrão apenas em ambiente de desenvolvimento",
