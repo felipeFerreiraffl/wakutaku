@@ -4,8 +4,8 @@ import { envVar } from "./envConfig.js";
 // Criação do cliente Redis
 const redisClient = createClient({
   url: envVar.REDIS_URL, // URL da Redis,
-  username: envVar.REDIS_USERNAME, 
-  password: envVar.REDIS_PASSWORD, 
+  username: envVar.REDIS_USERNAME,
+  password: envVar.REDIS_PASSWORD,
 
   socket: {
     connectTimeout: 60000, // Tempo limite de conexão com o banco de dados (60s)
@@ -26,6 +26,7 @@ redisClient.on("ready", () => {
 // Erro de conexão
 redisClient.on("error", (err: Error) => {
   console.log(`❌ [REDIS] Erro ao conectar cliente: ${err.message}`);
+  throw err;
 });
 
 // Reconexão

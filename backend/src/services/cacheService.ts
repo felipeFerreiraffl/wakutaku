@@ -36,7 +36,7 @@ export class CacheService {
       // Salvamento com expiração (EX)
       await redisClient.setEx(key, ttl, jsonData);
     } catch (error) {
-      return;
+      throw error;
     }
   }
 
@@ -46,7 +46,7 @@ export class CacheService {
       await redisClient.del(key);
       console.log(`[CACHE] Chave ${key} excluída com sucesso`);
     } catch (error) {
-      return;
+      throw error;
     }
   }
 

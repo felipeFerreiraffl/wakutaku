@@ -70,7 +70,6 @@ const jikanProxy = createProxyMiddleware({
           try {
             jsonData = JSON.parse(response);
           } catch (error) {
-            console.warn(`[PROXY CACHE] Resposta não é um JSON válido`);
             return response; // Resposta original
           }
 
@@ -84,16 +83,15 @@ const jikanProxy = createProxyMiddleware({
               jsonData.success === false ||
               res.statusCode >= 400
             ) {
-              console.warn(`[PROXY CACHE] Erro da API: ${res.statusCode}`);
               return response;
             }
 
             if (cacheKey && cacheTtl) {
               // Depois de tudo, pode salvar
-              CacheService.setCache(cacheKey, jsonData, cacheTtl).catch((err) =>
-                console.error(
-                  `[PROXY CACHE] Erro ao salvar ${cacheKey}: ${err}`
-                )
+              CacheService.setCache(cacheKey, jsonData, cacheTtl).catch(
+                (err) => {
+                  throw err;
+                }
               );
 
               res.setHeader("X-Cache", "MISS");
@@ -110,11 +108,10 @@ const jikanProxy = createProxyMiddleware({
       }
     ),
     error: (err, req, res) => {
-      console.error(`[PROXY] Erro de proxy: ${err.message}`);
       (res as any).status(502).json({
         success: false,
         type: "BAD_GATEWAY",
-        message: "Erro ao acessar a Jikan API",
+        message: err.message,
       });
     },
   },
