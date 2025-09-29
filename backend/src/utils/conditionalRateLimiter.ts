@@ -1,9 +1,8 @@
-import type { Request, Response, NextFunction } from "express";
+import type { NextFunction, Request, Response } from "express";
 import {
   globalRateLimiter,
   searchRateLimiter,
 } from "../middlewares/rateLimiter.js";
-import type { RateLimitRequestHandler } from "express-rate-limit";
 
 // Condição para rotas múltiplas (pesquisa e lista de animes/mangás)
 export const conditionalRateLimiter = (

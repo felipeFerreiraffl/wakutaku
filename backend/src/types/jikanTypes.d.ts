@@ -64,7 +64,7 @@ export interface JikanMalUrl {
   url: string;
 }
 
-// ==================== ANIME INTERFACES ====================
+/* ==================== ANIME INTERFACES ==================== */
 
 export interface JikanAnime {
   mal_id: number;
@@ -77,10 +77,10 @@ export interface JikanAnime {
   title_english: string | null;
   title_japanese: string | null;
   title_synonyms: string[];
-  type: 'TV' | 'OVA' | 'Movie' | 'Special' | 'ONA' | 'Music' | null;
+  type: "TV" | "OVA" | "Movie" | "Special" | "ONA" | "Music" | null;
   source: string;
   episodes: number | null;
-  status: 'Finished Airing' | 'Currently Airing' | 'Not yet aired';
+  status: "Finished Airing" | "Currently Airing" | "Not yet aired";
   airing: boolean;
   aired: JikanDateRange;
   duration: string;
@@ -93,7 +93,7 @@ export interface JikanAnime {
   favorites: number;
   synopsis: string | null;
   background: string | null;
-  season: 'winter' | 'spring' | 'summer' | 'fall' | null;
+  season: "winter" | "spring" | "summer" | "fall" | null;
   year: number | null;
   broadcast: JikanBroadcast;
   producers: JikanMalUrl[];
@@ -237,10 +237,23 @@ export interface JikanManga {
   title_english: string | null;
   title_japanese: string | null;
   title_synonyms: string[];
-  type: 'Manga' | 'Novel' | 'Light Novel' | 'One-shot' | 'Doujinshi' | 'Manhwa' | 'Manhua' | null;
+  type:
+    | "Manga"
+    | "Novel"
+    | "Light Novel"
+    | "One-shot"
+    | "Doujinshi"
+    | "Manhwa"
+    | "Manhua"
+    | null;
   chapters: number | null;
   volumes: number | null;
-  status: 'Finished' | 'Publishing' | 'On Hiatus' | 'Discontinued' | 'Not yet published';
+  status:
+    | "Finished"
+    | "Publishing"
+    | "On Hiatus"
+    | "Discontinued"
+    | "Not yet published";
   publishing: boolean;
   published: JikanDateRange;
   score: number | null;
@@ -394,16 +407,19 @@ export interface JikanPaginatedResponse<T> {
 
 export type JikanAnimeResponse = JikanResponse<JikanAnime>;
 export type JikanAnimeListResponse = JikanPaginatedResponse<JikanAnime>;
-export type JikanAnimeCharactersResponse = JikanPaginatedResponse<JikanAnimeCharacter>;
+export type JikanAnimeCharactersResponse =
+  JikanPaginatedResponse<JikanAnimeCharacter>;
 export type JikanAnimeStaffResponse = JikanPaginatedResponse<JikanAnimeStaff>;
 export type JikanAnimeStatisticsResponse = JikanResponse<JikanAnimeStatistics>;
 export type JikanAnimeReviewsResponse = JikanPaginatedResponse<JikanReview>;
-export type JikanAnimeRecommendationsResponse = JikanPaginatedResponse<JikanRecommendation>;
+export type JikanAnimeRecommendationsResponse =
+  JikanPaginatedResponse<JikanRecommendation>;
 export type JikanAnimeNewsResponse = JikanPaginatedResponse<JikanNewsArticle>;
 
 export type JikanMangaResponse = JikanResponse<JikanManga>;
 export type JikanMangaListResponse = JikanPaginatedResponse<JikanManga>;
-export type JikanMangaCharactersResponse = JikanPaginatedResponse<JikanMangaCharacter>;
+export type JikanMangaCharactersResponse =
+  JikanPaginatedResponse<JikanMangaCharacter>;
 export type JikanMangaStatisticsResponse = JikanResponse<JikanMangaStatistics>;
 export type JikanMangaReviewsResponse = JikanPaginatedResponse<JikanReview>;
 
@@ -427,17 +443,30 @@ export interface AnimeSearchParams {
   q?: string;
   page?: number;
   limit?: number;
-  type?: 'tv' | 'movie' | 'ova' | 'special' | 'ona' | 'music';
+  type?: "tv" | "movie" | "ova" | "special" | "ona" | "music";
   score?: number;
   min_score?: number;
   max_score?: number;
-  status?: 'airing' | 'complete' | 'upcoming';
-  rating?: 'g' | 'pg' | 'pg13' | 'r17' | 'r' | 'rx';
+  status?: "airing" | "complete" | "upcoming";
+  rating?: "g" | "pg" | "pg13" | "r17" | "r" | "rx";
   sfw?: boolean;
   genres?: string;
   genres_exclude?: string;
-  order_by?: 'mal_id' | 'title' | 'type' | 'rating' | 'start_date' | 'end_date' | 'episodes' | 'score' | 'scored_by' | 'rank' | 'popularity' | 'members' | 'favorites';
-  sort?: 'desc' | 'asc';
+  order_by?:
+    | "mal_id"
+    | "title"
+    | "type"
+    | "rating"
+    | "start_date"
+    | "end_date"
+    | "episodes"
+    | "score"
+    | "scored_by"
+    | "rank"
+    | "popularity"
+    | "members"
+    | "favorites";
+  sort?: "desc" | "asc";
   letter?: string;
   producer?: string;
 }
@@ -446,16 +475,36 @@ export interface MangaSearchParams {
   q?: string;
   page?: number;
   limit?: number;
-  type?: 'manga' | 'novel' | 'lightnovel' | 'oneshot' | 'doujin' | 'manhwa' | 'manhua';
+  type?:
+    | "manga"
+    | "novel"
+    | "lightnovel"
+    | "oneshot"
+    | "doujin"
+    | "manhwa"
+    | "manhua";
   score?: number;
   min_score?: number;
   max_score?: number;
-  status?: 'publishing' | 'complete' | 'hiatus' | 'discontinued' | 'upcoming';
+  status?: "publishing" | "complete" | "hiatus" | "discontinued" | "upcoming";
   sfw?: boolean;
   genres?: string;
   genres_exclude?: string;
-  order_by?: 'mal_id' | 'title' | 'type' | 'start_date' | 'end_date' | 'chapters' | 'volumes' | 'score' | 'scored_by' | 'rank' | 'popularity' | 'members' | 'favorites';
-  sort?: 'desc' | 'asc';
+  order_by?:
+    | "mal_id"
+    | "title"
+    | "type"
+    | "start_date"
+    | "end_date"
+    | "chapters"
+    | "volumes"
+    | "score"
+    | "scored_by"
+    | "rank"
+    | "popularity"
+    | "members"
+    | "favorites";
+  sort?: "desc" | "asc";
   letter?: string;
   magazine?: string;
 }

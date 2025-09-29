@@ -2,7 +2,7 @@
   "name": "wakutaku-backend",
   "description": "Configurações de backend para o projeto WakuTaku",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "./src/server.ts",
   "scripts": {
     "start": "node ./dist/server.cjs",
     "build": "tsup ./src",

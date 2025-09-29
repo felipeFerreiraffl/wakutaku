@@ -14,7 +14,6 @@ export const cacheFirst = async (req: any, res: any, next: any) => {
     const ttl = defineCacheTtl(url);
 
     if (ttl === 0) {
-      console.log(`[PROXY CACHE] Sem cache para a rota ${url}`);
       return next();
     }
 
@@ -23,8 +22,6 @@ export const cacheFirst = async (req: any, res: any, next: any) => {
     const cachedData = await CacheService.getCache(cacheKey);
 
     if (cachedData) {
-      console.log(`[PROXY CACHE] HIT: ${cacheKey}`);
-
       res.setHeader("X-Cache", "HIT");
       res.setHeader("X-Cache-Key", cacheKey);
       res.setHeader("X-Cache-TTL", ttl);
@@ -32,8 +29,6 @@ export const cacheFirst = async (req: any, res: any, next: any) => {
 
       return res.json(cachedData);
     }
-
-    console.log(`[PROXY CACHE] MISS: ${cacheKey}`);
 
     // Anexa as informações ao request antes da proxy
     req.cacheKey = cacheKey;
@@ -105,16 +100,11 @@ const jikanProxy = createProxyMiddleware({
               res.setHeader("X-Cache-Key", cacheKey);
               res.setHeader("X-Cache-TTL", cacheTtl.toString());
               res.setHeader("X-Cache-Source", "Jikan-API");
-
-              console.log(
-                `[PROXY CACHE] Salvando: ${cacheKey} (TTL: ${cacheTtl}s)`
-              );
             }
           }
 
           return response; // Resposta original
         } catch (error) {
-          console.log(`[PROXY] Erro de interceptação: ${error}`);
           return responseBuffer.toString("utf-8"); // Fallback
         }
       }

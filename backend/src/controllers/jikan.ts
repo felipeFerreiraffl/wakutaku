@@ -24,8 +24,6 @@ export const getSeasonStats = async (
     const ttl = CacheService.TTL.SHORT;
 
     if (cacheData) {
-      console.log(`[CUSTOM CACHE] HIT: ${cacheKey}`);
-
       res.setHeader("X-Cache", "HIT");
       res.setHeader("X-Cache-Key", cacheKey);
       res.setHeader("X-Cache-TTL", ttl);
@@ -74,7 +72,6 @@ export const getSeasonStats = async (
     res.setHeader("X-Cache-TTL", ttl);
     res.setHeader("X-Cache-Source", "Jikan-API");
 
-    console.log(`[CUSTOM CACHE] Salvando: ${cacheKey} (TTL: ${ttl}s)`);
     setSuccessMessage(res, result);
   } catch (error) {
     next(error);
@@ -93,8 +90,6 @@ export const getTopAnimesSeason = async (
     const ttl = CacheService.TTL.SHORT;
 
     if (cacheData) {
-      console.log(`[CUSTOM CACHE] HIT: ${cacheKey}`);
-
       res.setHeader("X-Cache", "HIT");
       res.setHeader("X-Cache-Key", cacheKey);
       res.setHeader("X-Cache-TTL", ttl);
@@ -120,8 +115,6 @@ export const getTopAnimesSeason = async (
     res.setHeader("X-Cache-TTL", ttl);
     res.setHeader("X-Cache-Source", "Jikan-API");
 
-    console.log(`[CUSTOM CACHE] Salvando: ${cacheKey} (TTL: ${ttl}s)`);
-
     setSuccessMessage(res, topAnimes);
   } catch (error) {
     next(error);
@@ -143,8 +136,6 @@ export const getTrendingData = async (
     const ttl = CacheService.TTL.SHORT;
 
     if (cacheData) {
-      console.log(`[CUSTOM CACHE] HIT: ${cacheKey}`);
-
       res.setHeader("X-Cache", "HIT");
       res.setHeader("X-Cache-Key", cacheKey);
       res.setHeader("X-Cache-TTL", ttl);
@@ -204,8 +195,6 @@ export const getTrendingData = async (
     res.setHeader("X-Cache-Key", cacheKey);
     res.setHeader("X-Cache-TTL", ttl);
     res.setHeader("X-Cache-Source", "Jikan-API");
-
-    console.log(`[CUSTOM CACHE] Salvando: ${cacheKey} (TTL: ${ttl}s)`);
 
     setSuccessMessage(res, trendingData);
   } catch (error) {

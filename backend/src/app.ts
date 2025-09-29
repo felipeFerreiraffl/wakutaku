@@ -12,8 +12,6 @@ import jikanRouter from "./routes/jikan.js";
 const app = express();
 app.use(express.json());
 
-// Rotas
-
 async function startServer() {
   try {
     console.log("🔄️ Conectando-se ao Redis...");

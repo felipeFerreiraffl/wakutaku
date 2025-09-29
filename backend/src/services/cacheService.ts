@@ -20,12 +20,9 @@ export class CacheService {
         return null;
       }
 
-      console.log(`[CACHE] Cache recebido: ${cachedData}`);
-
       // Recebe os dados do cache (JSON) e tranforma em objeto JS (com o tipo T)
       return JSON.parse(cachedData) as T;
     } catch (error) {
-      console.error(`[CACHE] Erro ao buscar cache: ${error}`);
       return null;
     }
   }
@@ -38,12 +35,8 @@ export class CacheService {
 
       // Salvamento com expiração (EX)
       await redisClient.setEx(key, ttl, jsonData);
-
-      console.log(
-        `[CACHE] Dados salvos no cache! \n Chave: ${key} \n Expira em ${ttl}`
-      );
     } catch (error) {
-      console.error(`[CACHE] Erro ao salvar dados no cache: ${error}`);
+      return;
     }
   }
 
@@ -53,7 +46,7 @@ export class CacheService {
       await redisClient.del(key);
       console.log(`[CACHE] Chave ${key} excluída com sucesso`);
     } catch (error) {
-      console.error(`[CACHE] Erro ao excluir dados no cache: ${error}`);
+      return;
     }
   }
 
@@ -64,21 +57,13 @@ export class CacheService {
       const keys = await redisClient.keys(pattern);
 
       if (keys.length === 0) {
-        console.log(`[CACHE] Nenhum dado do cache com padrão ${pattern}`);
         return 0;
       }
 
       // Deleta cada dado do cache
       const deletedPattern = await redisClient.del([...keys]);
-      console.log(
-        `[CACHE] Todas as ${deletedPattern} chaves removidas pelo padrão ${pattern}`
-      );
-
       return deletedPattern;
     } catch (error) {
-      console.error(
-        `[CACHE] Erro ao deletar os dados do cache por padrão: ${error}`
-      );
       return 0;
     }
   }
@@ -90,9 +75,6 @@ export class CacheService {
       const result = await redisClient.exists(key);
       return result === 1; // True
     } catch (error) {
-      console.error(
-        `[CACHE] Erro ao verificar se a chave ${key} existe: ${error}`
-      );
       return false;
     }
   }
@@ -102,7 +84,6 @@ export class CacheService {
     try {
       return await redisClient.ttl(key); // Números positivos ou -1 (não expira)
     } catch (error) {
-      console.error(`[CACHE] Erro ao obter TTL da chave ${key}: ${error}`);
       return -2; // Não existe TTL para o cache
     }
   }

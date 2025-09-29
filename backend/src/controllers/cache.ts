@@ -261,8 +261,6 @@ export const getCachePerformanceStats = async (
   try {
     const info = await redisClient.info();
 
-    console.log(info);
-
     // Chaves encontradas com sucesso
     const keyspaceHits = parseInt(
       info.match(/keyspace_hits:(\d+)/)?.[1] || "0"
