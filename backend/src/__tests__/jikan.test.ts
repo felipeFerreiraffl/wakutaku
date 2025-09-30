@@ -65,7 +65,7 @@ describe("GET /season_stats", () => {
   });
 });
 
-describe("GET season_top", () => {
+describe.skip("GET season_top", () => {
   it("retorna uma lista com os melhores animes da temporada", async () => {});
 
   describe("Error Handling", () => {
@@ -75,7 +75,7 @@ describe("GET season_top", () => {
   });
 });
 
-describe("GET trending/:type", () => {
+describe.skip("GET trending/:type", () => {
   it("retorna uma lista dos animes em alta (type = anime)", async () => {});
   it("retorna uma lista dos mangás em alta (type = manga)", async () => {});
 
@@ -83,5 +83,22 @@ describe("GET trending/:type", () => {
     it("", async () => {});
 
     it("", async () => {});
+  });
+});
+
+describe("Rota não encontrada", () => {
+  it("retorna 404 (NOT_FOUND) ao digitar uma rota não existente", async () => {
+    server.use(
+      errorHandler(
+        "http://localhost:3000/not-found",
+        404,
+        "NOT_FOUND",
+        "Rota não encontrada"
+      )
+    );
+
+    const response = await fetch("http://localhost:3000/not-found");
+
+    expect(response.status).toBe(404);
   });
 });
