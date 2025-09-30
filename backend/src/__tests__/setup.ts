@@ -8,6 +8,7 @@ import {
 } from "../config/redisConnection.js";
 import { beforeEach } from "node:test";
 import { server } from "../__mocks__/node.js";
+import { errorHandler } from "../middlewares/statusHandler.js";
 
 // Conecta ao Redis antes de iniciar os testes
 beforeAll(async () => {
