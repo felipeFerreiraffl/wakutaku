@@ -7,10 +7,13 @@ import {
   redisClient,
 } from "../config/redisConnection.js";
 import { beforeEach } from "node:test";
+import { server } from "../__mocks__/node.js";
 
 // Conecta ao Redis antes de iniciar os testes
 beforeAll(async () => {
   console.log("[TEST SETUP] Inicando setup de testes...");
+  // Ativa o mock
+  server.listen();
 
   try {
     await connectToRedis();
@@ -23,6 +26,8 @@ beforeAll(async () => {
 
 // Limpeza de todos os caches
 afterEach(async () => {
+  server.resetHandlers();
+
   if (redisClient.isOpen) {
     try {
       await redisClient.flushDb();
@@ -37,6 +42,7 @@ afterEach(async () => {
 // Desconecta quando tudo acabar
 afterAll(async () => {
   console.log("[TEST SETUP] Encerrando testes...");
+  server.close();
 
   try {
     // Limpa o cache antes de desconectar

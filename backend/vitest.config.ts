@@ -21,7 +21,7 @@ export default defineConfig({
         "src/**/*.d.ts",
       ],
     },
-    setupFiles: ["./src/__tests__"], // Processado antes de cada teste
+    setupFiles: ["./src/__tests__/setup.ts"], // Processado antes de cada teste
     pool: "forks", // Isolação dos testes
     poolOptions: {
       forks: {
