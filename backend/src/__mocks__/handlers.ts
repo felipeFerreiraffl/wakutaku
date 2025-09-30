@@ -13,6 +13,87 @@ const mockSeasonStatsSuccess = {
   },
 };
 
+const mockSeasonResponseSuccess = {
+  success: true,
+  data: [
+    {
+      mal_id: 1,
+      type: "TV",
+      status: "Finished Airing",
+      score: 10,
+      year: new Date().getFullYear(),
+    },
+    {
+      mal_id: 2,
+      type: "TV",
+      status: "Airing",
+      score: 9,
+      year: new Date().getFullYear(),
+    },
+    {
+      mal_id: 3,
+      type: "Movie",
+      status: "Finished",
+      score: 8,
+      year: new Date().getFullYear(),
+    },
+  ],
+};
+
+const mockTrendingAnimeSuccess = {
+  success: true,
+  data: [
+    {
+      mal_id: 1,
+      type: "TV",
+      status: "Finished Airing",
+      score: Math.random() * 10 + 10,
+      year: new Date().getFullYear(),
+    },
+    {
+      mal_id: 2,
+      type: "TV",
+      status: "Airing",
+      score: Math.random() * 10 + 10,
+      year: new Date().getFullYear(),
+    },
+    {
+      mal_id: 3,
+      type: "TV",
+      status: "Finished",
+      score: Math.random() * 10 + 10,
+      year: new Date().getFullYear(),
+    },
+  ],
+};
+
+const mockTrendingMangaSuccess = {
+  success: true,
+  data: [
+    {
+      mal_id: 1,
+      type: "Manga",
+      status: "Publishing",
+      score: Math.random() * 10 + 10,
+      year: new Date().getFullYear(),
+    },
+    {
+      mal_id: 2,
+      type: "Manga",
+      status: "Finished",
+      score: Math.random() * 10 + 10,
+      year: new Date().getFullYear(),
+    },
+    {
+      mal_id: 3,
+      type: "Manga",
+      status: "Finished",
+      score: Math.random() * 10 + 10,
+      year: new Date().getFullYear(),
+    },
+  ],
+};
+
 // Tipos de erro
 type errorType =
   | "BAD_REQUEST"
@@ -28,6 +109,17 @@ export const handlers = [
   http.get(`http://localhost:${envVar.PORT}/api/season_stats`, () => {
     return HttpResponse.json(mockSeasonStatsSuccess, { status: 200 });
   }),
+  http.get(`http://localhost:${envVar.PORT}/api/season_top`, () => {
+    return HttpResponse.json(mockSeasonResponseSuccess, { status: 200 });
+  }),
+  http.get(
+    `http://localhost:${envVar.PORT}/api/trending/:type`,
+    ({ params }) => {
+      return params.type === "anime"
+        ? HttpResponse.json(mockTrendingAnimeSuccess, { status: 200 })
+        : HttpResponse.json(mockTrendingMangaSuccess, { status: 200 });
+    }
+  ),
 ];
 
 // Lida com diversos tipos de erro
