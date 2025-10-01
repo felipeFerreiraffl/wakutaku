@@ -4,11 +4,13 @@ import { CacheService } from "../services/cacheService.js";
 import { createTestKey } from "./setup.js";
 import { defineCacheTtl } from "../utils/defineCacheProps.js";
 import { redisClient } from "../config/redisConnection.js";
+import { server } from "../__mocks__/node.js";
+import { errorHandler } from "../__mocks__/handlers/jikan.js";
 
 const CACHE_URL = `http://localhost:${envVar.PORT}/api/cache`;
 
 describe("Testes de cache", () => {
-  describe.skip("CacheService", () => {
+  describe("CacheService", () => {
     it("recebe uma chave existente no cache do Redis", async () => {
       const key = createTestKey("test");
 
@@ -39,7 +41,7 @@ describe("Testes de cache", () => {
     });
   });
 
-  describe.skip("decideTtl", () => {
+  describe("decideTtl", () => {
     it("não cacheia para rotas /random ou /cache (sem TTL)", () => {
       expect(defineCacheTtl("/api/random/anime")).toBe(0);
       expect(defineCacheTtl("/api/random/manga")).toBe(0);
@@ -89,7 +91,7 @@ describe("Testes de cache", () => {
 
   /* ========== Rotas do cache ========== */
   describe("Rotas do cache", () => {
-    describe.skip("GET /cache/status", () => {
+    describe("GET /cache/status", () => {
       it("retorna dados de status do cache", async () => {
         const response = await fetch(`${CACHE_URL}/status`);
         const data = await response.json();
@@ -128,7 +130,7 @@ describe("Testes de cache", () => {
       });
     });
 
-    describe.skip("GET /cache/stats", () => {
+    describe("GET /cache/stats", () => {
       it("retorna informações de performance do cache", async () => {
         const response = await fetch(`${CACHE_URL}/stats`);
         const data = await response.json();
@@ -144,7 +146,7 @@ describe("Testes de cache", () => {
       });
     });
 
-    describe.skip("GET /cache/keys", () => {
+    describe("GET /cache/keys", () => {
       it("retorna as chaves do cache apenas em ambiente de desenvolvimento ou teste", async () => {
         const response = await fetch(`${CACHE_URL}/keys`);
         const data = await response.json();
@@ -180,7 +182,7 @@ describe("Testes de cache", () => {
       });
     });
 
-    describe.skip("GET /cache/keys/:pattern", () => {
+    describe("GET /cache/keys/:pattern", () => {
       it("retorna os dados de chaves com padrão apenas em ambiente de desenvolvimento ou teste", async () => {
         const pattern = "*test*";
         const response = await fetch(`${CACHE_URL}/keys/${pattern}`);
@@ -253,6 +255,107 @@ describe("Testes de cache", () => {
           expect(data.data).not.toHaveProperty("keysDeleted");
         }
       });
+    });
+
+    describe("GET /cache/clear/:pattern", () => {
+      it("limpa todas as chaves do cache por padrão apenas em desenvolvimento ou teste", async () => {
+        const pattern = "*test*";
+        const response = await fetch(`${CACHE_URL}/clear/${pattern}`);
+        const data = await response.json();
+
+        const keys: string[] = [];
+
+        expect(data).toHaveProperty("success", true);
+
+        if (envVar.NODE_ENV !== "production") {
+          // Verificação da quantidade de chaves presentes
+          if (keys.length === 0) {
+            expect(data.data).toMatchObject({
+              message: expect.any(String),
+              pattern,
+              deleted: 0,
+            });
+          } else {
+            expect(data.data).toMatchObject({
+              message: expect.any(String),
+              patternDeleted: pattern,
+              keysFound: expect.any(Number),
+              keysDeleted: expect.any(Number),
+              keys: expect.any(Array),
+            });
+          }
+        }
+      });
+
+      it("retorna erro ao acessar a rota em ambiente de produção", async () => {
+        const pattern = "*test*";
+
+        const response = await fetch(`${CACHE_URL}/clear/${pattern}`);
+        const data = await response.json();
+
+        expect(data).toHaveProperty("success", true);
+
+        if (envVar.NODE_ENV === "production") {
+          expect(data.data).toHaveProperty("error");
+          expect(data.data).not.toHaveProperty("keys");
+        }
+      });
+
+      it("retorna erro ao digitar um pattern global (*)", async () => {
+        const pattern = "*";
+
+        const response = await fetch(`${CACHE_URL}/clear/${pattern}`);
+        const data = await response.json();
+
+        expect(data).toHaveProperty("success", true);
+
+        if (envVar.NODE_ENV !== "production") {
+          expect(data.data).toHaveProperty("error");
+          expect(data.data).not.toHaveProperty("keys");
+        }
+      });
+    });
+  });
+
+  describe("Rota não encontrada", () => {
+    it("retorna 404 (NOT_FOUND) ao digitar uma rota não existente", async () => {
+      server.use(
+        errorHandler(
+          `${CACHE_URL}/not-found`,
+          404,
+          "NOT_FOUND",
+          "Rota não encontrada"
+        )
+      );
+
+      const response = await fetch(`${CACHE_URL}/not-found`);
+      const data = await response.json();
+
+      expect(response.status).toBe(404);
+      expect(data).toHaveProperty("success", false);
+      expect(data).toHaveProperty("type", "NOT_FOUND");
+      expect(data).toHaveProperty("message");
+    });
+  });
+
+  describe("Erro interno", () => {
+    it("retorna erro 500 (INTERNAL_SERVER_ERROR)", async () => {
+      server.use(
+        errorHandler(
+          `${CACHE_URL}/status`,
+          500,
+          "INTERNAL_SERVER_ERROR",
+          "Erro interno"
+        )
+      );
+
+      const response = await fetch(`${CACHE_URL}/status`);
+      const data = await response.json();
+
+      expect(response.status).toBe(500);
+      expect(data).toHaveProperty("success", false);
+      expect(data).toHaveProperty("type", "INTERNAL_SERVER_ERROR");
+      expect(data).toHaveProperty("message");
     });
   });
 });

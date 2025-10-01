@@ -3,7 +3,7 @@ import { errorHandler } from "../__mocks__/handlers/jikan.js";
 import { server } from "../__mocks__/node.js";
 import { envVar } from "../config/envConfig";
 
-describe.skip("Testes de rotas da JIKAN", () => {
+describe("Testes de rotas da JIKAN", () => {
   describe("GET /season_stats", () => {
     it("retorna as estatísticas da temporada atual de animes", async () => {
       const response = await fetch(
@@ -270,6 +270,29 @@ describe.skip("Testes de rotas da JIKAN", () => {
       expect(response.status).toBe(404);
       expect(data).toHaveProperty("success", false);
       expect(data).toHaveProperty("type", "NOT_FOUND");
+      expect(data).toHaveProperty("message");
+    });
+  });
+
+  describe("Erro interno", () => {
+    it("retorna erro 500 (INTERNAL_SERVER_ERROR)", async () => {
+      server.use(
+        errorHandler(
+          `http://localhost:${envVar.PORT}/api/season_stats`,
+          500,
+          "INTERNAL_SERVER_ERROR",
+          "Erro interno"
+        )
+      );
+
+      const response = await fetch(
+        `http://localhost:${envVar.PORT}/api/season_stats`
+      );
+      const data = await response.json();
+
+      expect(response.status).toBe(500);
+      expect(data).toHaveProperty("success", false);
+      expect(data).toHaveProperty("type", "INTERNAL_SERVER_ERROR");
       expect(data).toHaveProperty("message");
     });
   });
