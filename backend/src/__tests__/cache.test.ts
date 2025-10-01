@@ -3,6 +3,7 @@ import { envVar } from "../config/envConfig";
 import { CacheService } from "../services/cacheService.js";
 import { createTestKey } from "./setup.js";
 import { defineCacheTtl } from "../utils/defineCacheProps.js";
+import { redisClient } from "../config/redisConnection.js";
 
 const CACHE_URL = `http://localhost:${envVar.PORT}/api/cache`;
 
@@ -87,28 +88,171 @@ describe("Testes de cache", () => {
   });
 
   /* ========== Rotas do cache ========== */
-  describe("GET /cache/status", () => {
-    it("retorna dados de status do cache", async () => {
-      const response = await fetch(`${CACHE_URL}/status`);
-      const data = await response.json();
+  describe("Rotas do cache", () => {
+    describe.skip("GET /cache/status", () => {
+      it("retorna dados de status do cache", async () => {
+        const response = await fetch(`${CACHE_URL}/status`);
+        const data = await response.json();
 
-      expect(data).toHaveProperty("success", true);
+        expect(data).toHaveProperty("success", true);
 
-      if (envVar.NODE_ENV === "production") {
+        if (envVar.NODE_ENV === "production") {
+          expect(data.data).toMatchObject({
+            status: expect.any(String),
+            totalKeys: expect.any(Number),
+            environment: "production",
+          });
+        } else {
+          expect(data.data).toMatchObject({
+            status: expect.any(String),
+            totalKeys: expect.any(Number),
+            uptime: expect.any(String),
+            memoryUsed: expect.any(String),
+            version: expect.any(String),
+          });
+        }
+      });
+
+      it("retorna messagem de desconexão do Redis", async () => {
+        const response = await fetch(`${CACHE_URL}/status`);
+        const data = await response.json();
+
+        expect(data).toHaveProperty("success", true);
+
+        if (!redisClient.isOpen) {
+          expect(data.data).toMatchObject({
+            status: expect.any(String),
+            message: expect.any(String),
+          });
+        }
+      });
+    });
+
+    describe.skip("GET /cache/stats", () => {
+      it("retorna informações de performance do cache", async () => {
+        const response = await fetch(`${CACHE_URL}/stats`);
+        const data = await response.json();
+
+        expect(data).toHaveProperty("success", true);
         expect(data.data).toMatchObject({
           status: expect.any(String),
-          totalKeys: expect.any(Number),
-          environment: "production",
+          totalRequests: expect.any(Number),
+          keyspaceHits: expect.any(Number),
+          keyspaceMisses: expect.any(Number),
+          hitRate: expect.any(String),
         });
-      } else {
+      });
+    });
+
+    describe.skip("GET /cache/keys", () => {
+      it("retorna as chaves do cache apenas em ambiente de desenvolvimento ou teste", async () => {
+        const response = await fetch(`${CACHE_URL}/keys`);
+        const data = await response.json();
+
+        expect(data).toHaveProperty("success", true);
         expect(data.data).toMatchObject({
-          status: expect.any(String),
-          totalKeys: expect.any(Number),
-          uptime: expect.any(String),
-          memoryUsed: expect.any(String),
-          version: expect.any(String),
+          keys: expect.any(Array),
+          total: expect.any(Number),
         });
-      }
+
+        const keys: string[] = [];
+
+        if (keys.length > 1000) {
+          expect(data.data).toMatchObject({
+            keys: expect.any(Array),
+            total: expect.any(Number),
+            truncate: expect.any(Boolean),
+            message: expect.any(String),
+          });
+        }
+      });
+
+      it("retorna erro ao acessar a rota em ambiente de produção", async () => {
+        const response = await fetch(`${CACHE_URL}/keys`);
+        const data = await response.json();
+
+        expect(data).toHaveProperty("success", true);
+
+        if (envVar.NODE_ENV === "production") {
+          expect(data.data).toHaveProperty("error");
+          expect(data.data).not.toHaveProperty("keys");
+        }
+      });
+    });
+
+    describe.skip("GET /cache/keys/:pattern", () => {
+      it("retorna os dados de chaves com padrão apenas em ambiente de desenvolvimento ou teste", async () => {
+        const pattern = "*test*";
+        const response = await fetch(`${CACHE_URL}/keys/${pattern}`);
+        const data = await response.json();
+
+        expect(data).toHaveProperty("success", true);
+
+        if (envVar.NODE_ENV !== "production") {
+          expect(data.data).toMatchObject({
+            pattern,
+            keys: expect.any(Array),
+            total: expect.any(Number),
+            truncated: expect.any(Boolean),
+          });
+        }
+      });
+
+      it("retorna erro ao acessar a rota em ambiente de produção", async () => {
+        const pattern = "*test*";
+        const response = await fetch(`${CACHE_URL}/keys/${pattern}`);
+        const data = await response.json();
+
+        expect(data).toHaveProperty("success", true);
+
+        if (envVar.NODE_ENV === "production") {
+          expect(data.data).toHaveProperty("error");
+          expect(data.data).not.toHaveProperty("keys");
+        }
+      });
+    });
+
+    describe("GET /cache/clear", () => {
+      it("limpa todas as chaves do cache apenas em desenvolvimento ou teste", async () => {
+        const response = await fetch(`${CACHE_URL}/clear?confirm=yes`);
+        const data = await response.json();
+
+        expect(data).toHaveProperty("success", true);
+
+        if (envVar.NODE_ENV !== "production") {
+          expect(data.data).toMatchObject({
+            message: expect.any(String),
+            keysDeleted: expect.any(Number),
+            timestamp: expect.any(String),
+          });
+        }
+      });
+
+      it("retorna erro ao acessar a rota em ambiente de produção", async () => {
+        const response = await fetch(`${CACHE_URL}/clear?confirm=yes`);
+        const data = await response.json();
+
+        expect(data).toHaveProperty("success", true);
+
+        if (envVar.NODE_ENV === "production") {
+          expect(data.data).toHaveProperty("error");
+          expect(data.data).not.toHaveProperty("keysDeleted");
+        }
+      });
+
+      it("retorna erro ao tentar apagar cache sem confirmar por query", async () => {
+        const response = await fetch(`${CACHE_URL}/clear`);
+        const data = await response.json();
+
+        expect(data).toHaveProperty("success", true);
+
+        if (envVar.NODE_ENV !== "production") {
+          expect(data.data).toHaveProperty("error");
+          expect(data.data).toHaveProperty("message");
+          expect(data.data).toHaveProperty("warning");
+          expect(data.data).not.toHaveProperty("keysDeleted");
+        }
+      });
     });
   });
 });

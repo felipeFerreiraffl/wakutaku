@@ -57,7 +57,7 @@ export const getCacheKeys = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    // Bloqueia em ambiente de desenvolvimento
+    // Bloqueia em ambiente de produção
     if (envVar.NODE_ENV === "production") {
       setSuccessMessage(res, {
         error: `Busca por chaves apenas em ambiente de desenvolvimento ou teste`,

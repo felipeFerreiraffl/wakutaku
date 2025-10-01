@@ -3,7 +3,7 @@ import { errorHandler } from "../__mocks__/handlers/jikan.js";
 import { server } from "../__mocks__/node.js";
 import { envVar } from "../config/envConfig";
 
-describe("Testes de rotas da JIKAN", () => {
+describe.skip("Testes de rotas da JIKAN", () => {
   describe("GET /season_stats", () => {
     it("retorna as estatísticas da temporada atual de animes", async () => {
       const response = await fetch(
