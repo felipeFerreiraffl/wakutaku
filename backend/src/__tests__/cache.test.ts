@@ -4,7 +4,7 @@ import { CacheService } from "../services/cacheService.js";
 import { createTestKey } from "./setup.js";
 import { defineCacheTtl } from "../utils/defineCacheProps.js";
 import { redisClient } from "../config/redisConnection.js";
-import { server } from "../__mocks__/node.js";
+import { mockServer } from "../__mocks__/node.js";
 import { errorHandler } from "../__mocks__/handlers/jikan.js";
 
 const CACHE_URL = `http://localhost:${envVar.PORT}/api/cache`;
@@ -319,7 +319,7 @@ describe("Testes de cache", () => {
 
   describe("Rota não encontrada", () => {
     it("retorna 404 (NOT_FOUND) ao digitar uma rota não existente", async () => {
-      server.use(
+      mockServer.use(
         errorHandler(
           `${CACHE_URL}/not-found`,
           404,
@@ -340,7 +340,7 @@ describe("Testes de cache", () => {
 
   describe("Erro interno", () => {
     it("retorna erro 500 (INTERNAL_SERVER_ERROR)", async () => {
-      server.use(
+      mockServer.use(
         errorHandler(
           `${CACHE_URL}/status`,
           500,

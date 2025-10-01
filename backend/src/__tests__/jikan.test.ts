@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { errorHandler } from "../__mocks__/handlers/jikan.js";
-import { server } from "../__mocks__/node.js";
+import { mockServer } from "../__mocks__/node.js";
 import { envVar } from "../config/envConfig";
 
 describe("Testes de rotas da JIKAN", () => {
@@ -22,7 +22,7 @@ describe("Testes de rotas da JIKAN", () => {
 
     describe("Error Handling", () => {
       it("retona erro 400 (BAD_REQUEST)", async () => {
-        server.use(
+        mockServer.use(
           errorHandler(
             `http://localhost:${envVar.PORT}/api/season_stats`,
             400,
@@ -43,7 +43,7 @@ describe("Testes de rotas da JIKAN", () => {
       });
 
       it("retorna erro 429 (TOO_MANY_REQUESTS)", async () => {
-        server.use(
+        mockServer.use(
           errorHandler(
             `http://localhost:${envVar.PORT}/api/season_stats`,
             429,
@@ -108,7 +108,7 @@ describe("Testes de rotas da JIKAN", () => {
 
     describe("Error Handling", () => {
       it("retona erro 400 (BAD_REQUEST)", async () => {
-        server.use(
+        mockServer.use(
           errorHandler(
             `http://localhost:${envVar.PORT}/api/season_top`,
             400,
@@ -129,7 +129,7 @@ describe("Testes de rotas da JIKAN", () => {
       });
 
       it("retorna erro 429 (TOO_MANY_REQUESTS)", async () => {
-        server.use(
+        mockServer.use(
           errorHandler(
             `http://localhost:${envVar.PORT}/api/season_top`,
             429,
@@ -208,7 +208,7 @@ describe("Testes de rotas da JIKAN", () => {
 
     describe("Error Handling", () => {
       it("retorna erro 400 (BAD_REQUEST) por tipo inválido", async () => {
-        server.use(
+        mockServer.use(
           errorHandler(
             `http://localhost:${envVar.PORT}/trending/invalid`,
             400,
@@ -229,7 +229,7 @@ describe("Testes de rotas da JIKAN", () => {
       });
 
       it("retorna erro 429 (TOO_MANY_REQUESTS)", async () => {
-        server.use(
+        mockServer.use(
           errorHandler(
             `http://localhost:${envVar.PORT}/trending/:type`,
             429,
@@ -254,7 +254,7 @@ describe("Testes de rotas da JIKAN", () => {
 
   describe("Rota não encontrada", () => {
     it("retorna 404 (NOT_FOUND) ao digitar uma rota não existente", async () => {
-      server.use(
+      mockServer.use(
         errorHandler(
           "http://localhost:3000/not-found",
           404,
@@ -276,7 +276,7 @@ describe("Testes de rotas da JIKAN", () => {
 
   describe("Erro interno", () => {
     it("retorna erro 500 (INTERNAL_SERVER_ERROR)", async () => {
-      server.use(
+      mockServer.use(
         errorHandler(
           `http://localhost:${envVar.PORT}/api/season_stats`,
           500,

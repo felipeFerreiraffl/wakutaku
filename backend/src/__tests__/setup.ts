@@ -1,20 +1,30 @@
 import "../utils/envLoader.js";
 
+import { beforeEach } from "node:test";
 import { afterAll, afterEach, beforeAll } from "vitest";
+import { mockServer } from "../__mocks__/node.js";
 import {
   connectToRedis,
   disconnectFromRedis,
   redisClient,
 } from "../config/redisConnection.js";
-import { beforeEach } from "node:test";
-import { server } from "../__mocks__/node.js";
-import { errorHandler } from "../middlewares/statusHandler.js";
+import app from "../app.js";
+import { envVar } from "../config/envConfig.js";
+
+let server: any;
 
 // Conecta ao Redis antes de iniciar os testes
 beforeAll(async () => {
   console.log("[TEST SETUP] Inicando setup de testes...");
   // Ativa o mock
-  server.listen();
+  mockServer.listen();
+
+  // Liga o servidor sempre que iniciar os testes
+  server = app.listen(envVar.PORT, () => {
+    console.log(
+      `[TEST SETUP] Servidor de teste rodando na porta ${envVar.PORT}`
+    );
+  });
 
   try {
     await connectToRedis();
@@ -27,7 +37,7 @@ beforeAll(async () => {
 
 // Limpeza de todos os caches
 afterEach(async () => {
-  server.resetHandlers();
+  mockServer.resetHandlers();
 
   if (redisClient.isOpen) {
     try {
@@ -43,7 +53,12 @@ afterEach(async () => {
 // Desconecta quando tudo acabar
 afterAll(async () => {
   console.log("[TEST SETUP] Encerrando testes...");
-  server.close();
+  mockServer.close();
+
+  // Fecha o servidor
+  if (server) {
+    await new Promise((res) => server.close(res));
+  }
 
   try {
     // Limpa o cache antes de desconectar
