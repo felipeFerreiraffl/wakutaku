@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { errorHandler } from "../__mocks__/handlers.js";
+import { errorHandler } from "../__mocks__/handlers/jikan.js";
 import { server } from "../__mocks__/node.js";
 import { envVar } from "../config/envConfig";
 import { createTestKey } from "./setup.js";
 import { CacheService } from "../services/cacheService.js";
 import { getCacheStatus } from "../controllers/cache.js";
+import { asyncWrapProviders } from "async_hooks";
 
 const CACHE_URL = `http://localhost:${envVar.PORT}/api/cache`;
 
@@ -40,5 +41,26 @@ describe("CacheService", () => {
 });
 
 describe("GET /cache/status", () => {
-  it("retorna dados de status do cache para produção", async () => {});
+  it("retorna dados de status do cache", async () => {
+    const response = await fetch(`${CACHE_URL}/status`);
+    const data = await response.json();
+
+    expect(data).toHaveProperty("success", true);
+
+    if (envVar.NODE_ENV === "production") {
+      expect(data.data).toMatchObject({
+        status: expect.any(String),
+        totalKeys: expect.any(Number),
+        environment: "production",
+      });
+    } else {
+      expect(data.data).toMatchObject({
+        status: expect.any(String),
+        totalKeys: expect.any(Number),
+        uptime: expect.any(String),
+        memoryUsed: expect.any(String),
+        version: expect.any(String),
+      });
+    }
+  });
 });

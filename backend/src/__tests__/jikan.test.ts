@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { errorHandler } from "../__mocks__/handlers.js";
+import { errorHandler } from "../__mocks__/handlers/jikan.js";
 import { server } from "../__mocks__/node.js";
 import { envVar } from "../config/envConfig";
 
