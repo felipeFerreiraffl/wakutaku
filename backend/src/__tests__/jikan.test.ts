@@ -64,7 +64,7 @@ describe("GET /season_stats", () => {
   });
 });
 
-describe("GET season_top", () => {
+describe("GET /season_top", () => {
   it("retorna uma lista com os melhores animes da temporada", async () => {
     const response = await fetch(
       `http://localhost:${envVar.PORT}/api/season_top`
@@ -150,7 +150,7 @@ describe("GET season_top", () => {
   });
 });
 
-describe("GET trending/:type", () => {
+describe("GET /trending/:type", () => {
   it("retorna uma lista dos animes em alta (type = anime)", async () => {
     const response = await fetch(
       `http://localhost:${envVar.PORT}/api/trending/anime`
