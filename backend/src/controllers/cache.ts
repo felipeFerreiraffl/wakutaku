@@ -290,5 +290,7 @@ export const getCachePerformanceStats = async (
       keyspaceMisses,
       hitRate: `${hitRate}%`,
     });
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };
