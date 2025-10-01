@@ -1,5 +1,5 @@
 import { http, HttpHandler, HttpResponse } from "msw";
-import { envVar } from "../config/envConfig.js";
+import { envVar } from "../../config/envConfig.js";
 
 const JIKAN_URL = envVar.JIKAN_API_URL;
 
@@ -105,7 +105,7 @@ type errorType =
   | "GATEWAY_TIMEOUT";
 
 // Mock de dados
-export const handlers = [
+export const jikanHandlers = [
   http.get(`http://localhost:${envVar.PORT}/api/season_stats`, () => {
     return HttpResponse.json(mockSeasonStatsSuccess, { status: 200 });
   }),
