@@ -20,7 +20,7 @@ export const getCacheStatus = async (
 
     const totalKeys = await redisClient.dbSize();
 
-    // Mostra mais detalhes em produção
+    // Mostra mais detalhes em desenvolvimento
     if (envVar.NODE_ENV !== "production") {
       const info = await redisClient.info();
 
