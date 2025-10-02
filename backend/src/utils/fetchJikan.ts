@@ -6,7 +6,7 @@ export async function fetchJikanResponse<T>(url: string) {
 
   if (!response.ok) {
     const error: JikanError = new Error("Erro ao dar fetch na url");
-    error.status = 500;
+    error.status = response.status;
     throw error;
   }
 

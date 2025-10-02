@@ -3,95 +3,125 @@ import { envVar } from "../../config/envConfig.js";
 
 const JIKAN_URL = envVar.JIKAN_API_URL;
 
-const mockSeasonStatsSuccess = {
-  success: true,
-  data: {
-    totalCount: 200,
-    frequentGenre: "Action",
-    frequentDemography: "Shounen",
-    averageScore: 10,
+const mockSeasonNowResponse = {
+  data: [
+    {
+      mal_id: 1,
+      type: "TV",
+      status: "Finished Airing",
+      score: 8.5,
+      scored_by: 10000,
+      rank: 100,
+      popularity: 50,
+      members: 50000,
+      favorites: 1000,
+      genres: [{ mal_id: 1, type: "anime", name: "Action" }],
+      demographics: [{ mal_id: 4, type: "anime", name: "Seinen" }],
+      year: new Date().getFullYear(),
+    },
+    {
+      mal_id: 2,
+      type: "TV",
+      status: "Currently Airing",
+      score: 9.0,
+      scored_by: 20000,
+      rank: 50,
+      popularity: 25,
+      members: 100000,
+      favorites: 5000,
+      genres: [{ mal_id: 1, type: "anime", name: "Action" }],
+      demographics: [{ mal_id: 2, type: "anime", name: "Shoujo" }],
+      year: new Date().getFullYear(),
+    },
+  ],
+  pagination: {
+    last_visible_page: 1,
+    has_next_page: false,
+    current_page: 1,
+    items: {
+      count: 2,
+      total: 2,
+      per_page: 25,
+    },
   },
 };
 
-const mockSeasonResponseSuccess = {
-  success: true,
+const mockAnimeListReponse = {
   data: [
     {
       mal_id: 1,
       type: "TV",
       status: "Finished Airing",
-      score: 10,
+      score: 8.5,
+      scored_by: 10000,
+      rank: 100,
+      popularity: 50,
+      members: 50000,
+      favorites: 1000,
       year: new Date().getFullYear(),
     },
     {
       mal_id: 2,
       type: "TV",
-      status: "Airing",
-      score: 9,
-      year: new Date().getFullYear(),
-    },
-    {
-      mal_id: 3,
-      type: "Movie",
-      status: "Finished",
-      score: 8,
+      status: "Currently Airing",
+      score: 9.0,
+      scored_by: 20000,
+      rank: 50,
+      popularity: 25,
+      members: 100000,
+      favorites: 5000,
       year: new Date().getFullYear(),
     },
   ],
+  pagination: {
+    last_visible_page: 1,
+    has_next_page: false,
+    current_page: 1,
+    items: {
+      count: 2,
+      total: 2,
+      per_page: 25,
+    },
+  },
 };
 
-const mockTrendingAnimeSuccess = {
-  success: true,
+const mockMangaListReponse = {
   data: [
     {
       mal_id: 1,
-      type: "TV",
-      status: "Finished Airing",
-      score: Math.random() * 10 + 10,
+      type: "Manga",
+      status: "Finished",
+      score: 8.5,
+      scored_by: 10000,
+      rank: 100,
+      popularity: 50,
+      members: 50000,
+      favorites: 1000,
       year: new Date().getFullYear(),
     },
     {
       mal_id: 2,
-      type: "TV",
-      status: "Airing",
-      score: Math.random() * 10 + 10,
-      year: new Date().getFullYear(),
-    },
-    {
-      mal_id: 3,
-      type: "TV",
-      status: "Finished",
-      score: Math.random() * 10 + 10,
-      year: new Date().getFullYear(),
-    },
-  ],
-};
-
-const mockTrendingMangaSuccess = {
-  success: true,
-  data: [
-    {
-      mal_id: 1,
       type: "Manga",
       status: "Publishing",
-      score: Math.random() * 10 + 10,
-      year: new Date().getFullYear(),
-    },
-    {
-      mal_id: 2,
-      type: "Manga",
-      status: "Finished",
-      score: Math.random() * 10 + 10,
-      year: new Date().getFullYear(),
-    },
-    {
-      mal_id: 3,
-      type: "Manga",
-      status: "Finished",
-      score: Math.random() * 10 + 10,
+      score: 9.0,
+      scored_by: 20000,
+      rank: 50,
+      popularity: 25,
+      members: 100000,
+      favorites: 5000,
       year: new Date().getFullYear(),
     },
   ],
+  pagination: {
+    last_visible_page: 1,
+    has_next_page: false,
+    current_page: 1,
+    items: {
+      count: 2,
+      total: 2,
+      per_page: 25,
+    },
+  },
 };
 
 // Tipos de erro
@@ -106,33 +136,29 @@ type errorType =
 
 // Mock de dados
 export const jikanHandlers = [
-  http.get(`http://localhost:${envVar.PORT}/api/season_stats`, () => {
-    return HttpResponse.json(mockSeasonStatsSuccess, { status: 200 });
+  http.get(`${JIKAN_URL}/seasons/now`, () => {
+    return HttpResponse.json(mockSeasonNowResponse);
   }),
-  http.get(`http://localhost:${envVar.PORT}/api/season_top`, () => {
-    return HttpResponse.json(mockSeasonResponseSuccess, { status: 200 });
-  }),
-  http.get(
-    `http://localhost:${envVar.PORT}/api/trending/:type`,
-    ({ params }) => {
-      return params.type === "anime"
-        ? HttpResponse.json(mockTrendingAnimeSuccess, { status: 200 })
-        : HttpResponse.json(mockTrendingMangaSuccess, { status: 200 });
-    }
-  ),
-];
 
-// Lida com diversos tipos de erro
-export const errorHandler = (
-  url: string,
-  statusCode: number,
-  type: errorType,
-  message: string
-): HttpHandler => {
-  return http.get(url, () => {
-    return HttpResponse.json(
-      { success: false, type, message },
-      { status: statusCode }
-    );
-  });
-};
+  http.get(`${JIKAN_URL}/anime`, ({ request }) => {
+    const url = new URL(request.url);
+    const startDate = url.searchParams.get("start_date");
+
+    if (startDate) {
+      return HttpResponse.json(mockAnimeListReponse);
+    }
+
+    return HttpResponse.json(mockAnimeListReponse);
+  }),
+
+  http.get(`${JIKAN_URL}/manga`, ({ request }) => {
+    const url = new URL(request.url);
+    const startDate = url.searchParams.get("start_date");
+
+    if (startDate) {
+      return HttpResponse.json(mockMangaListReponse);
+    }
+
+    return HttpResponse.json(mockMangaListReponse);
+  }),
+];

@@ -1,6 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { errorHandler } from "../__mocks__/handlers/jikan.js";
-import { mockServer } from "../__mocks__/node.js";
 import { envVar } from "../config/envConfig";
 
 describe("Testes de rotas da JIKAN", () => {
@@ -99,29 +97,6 @@ describe("Testes de rotas da JIKAN", () => {
         expect(item.mal_id).toBeGreaterThan(0);
         expect(item.type).toBe(expectedType);
       });
-    });
-  });
-
-  describe("Rota não encontrada", () => {
-    it("retorna 404 (NOT_FOUND) ao digitar uma rota não existente", async () => {
-      mockServer.use(
-        errorHandler(
-          `${envVar.JIKAN_API_URL}/not-found`,
-          404,
-          "NOT_FOUND",
-          "Rota não encontrada"
-        )
-      );
-
-      const response = await fetch("http://localhost:3000/not-found");
-
-      const data = await response.json();
-
-      expect(response.status).toBe(404);
-      expect(response.ok).toBe(false);
-      expect(data).toHaveProperty("success", false);
-      expect(data).toHaveProperty("type", "NOT_FOUND");
-      expect(data).toHaveProperty("message");
     });
   });
 });

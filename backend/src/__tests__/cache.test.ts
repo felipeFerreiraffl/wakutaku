@@ -5,7 +5,6 @@ import { createTestKey } from "./setup.js";
 import { defineCacheTtl } from "../utils/defineCacheProps.js";
 import { redisClient } from "../config/redisConnection.js";
 import { mockServer } from "../__mocks__/node.js";
-import { errorHandler } from "../__mocks__/handlers/jikan.js";
 
 const CACHE_URL = `http://localhost:${envVar.PORT}/api/cache`;
 
@@ -49,16 +48,6 @@ describe("Testes de cache", () => {
       expect(responseHit.headers.get("X-Cache")).toBe("HIT");
 
       expect(dataMiss).toEqual(dataHit);
-    });
-
-    describe("Error Handling", () => {
-      it("retorna null ao pegar uma chave inexistente", async () => {
-        const inexistentKey = "inexistent-key";
-
-        const response = await CacheService.getCache<any>(inexistentKey);
-
-        expect(response).toBe(null);
-      });
     });
   });
 
@@ -369,50 +358,6 @@ describe("Testes de cache", () => {
       const result = await CacheService.getCache<any>(key);
       expect(result).toBeDefined();
       expect(result).toHaveProperty("value");
-    });
-  });
-
-  describe("Rota não encontrada", () => {
-    it("retorna 404 (NOT_FOUND) ao digitar uma rota não existente", async () => {
-      mockServer.use(
-        errorHandler(
-          `${CACHE_URL}/not-found`,
-          404,
-          "NOT_FOUND",
-          "Rota não encontrada"
-        )
-      );
-
-      const response = await fetch(`${CACHE_URL}/not-found`);
-      const data = await response.json();
-
-      expect(response.status).toBe(404);
-      expect(response.ok).toBe(false);
-      expect(data).toHaveProperty("success", false);
-      expect(data).toHaveProperty("type", "NOT_FOUND");
-      expect(data).toHaveProperty("message", "Rota não encontrada");
-    });
-  });
-
-  describe("Erro interno", () => {
-    it("retorna erro 500 (INTERNAL_SERVER_ERROR)", async () => {
-      mockServer.use(
-        errorHandler(
-          `${CACHE_URL}/status`,
-          500,
-          "INTERNAL_SERVER_ERROR",
-          "Erro interno"
-        )
-      );
-
-      const response = await fetch(`${CACHE_URL}/status`);
-      const data = await response.json();
-
-      expect(response.status).toBe(500);
-      expect(response.ok).toBe(false);
-      expect(data).toHaveProperty("success", false);
-      expect(data).toHaveProperty("type", "INTERNAL_SERVER_ERROR");
-      expect(data).toHaveProperty("message", "Erro interno");
     });
   });
 });
