@@ -17,9 +17,14 @@ describe("Testes de cache", () => {
       await CacheService.setCache(key, { test: "OK" }, 300);
 
       const response = await CacheService.getCache<any>(key);
-      const exists = (await CacheService.existsCache(key)) ? response : null;
+      const exists = await CacheService.existsCache(key);
 
       expect(response).toEqual({ test: "OK" });
+      expect(exists).toBe(true);
+
+      const ttl = await CacheService.getTtlExpiringTime(key);
+      expect(ttl).toBeGreaterThan(0);
+      expect(ttl).toBeLessThanOrEqual(300);
     });
 
     it("salva uma chave no cache do Redis", async () => {
@@ -30,11 +35,27 @@ describe("Testes de cache", () => {
       expect(response).toBe(response);
     });
 
+    it("retorna MISS para primeira requisição do cache e HIT na segunda requisição", async () => {
+      const url = `http://localhost:${envVar.PORT}/api/season_stats`;
+
+      const responseMiss = await fetch(url);
+      const dataMiss = await responseMiss.json();
+
+      expect(responseMiss.headers.get("X-Cache")).toBe("MISS");
+      expect(responseMiss.headers.get("X-Cache-Source")).toBe("Jikan-API");
+
+      const responseHit = await fetch(url);
+      const dataHit = await responseHit.json();
+      expect(responseHit.headers.get("X-Cache")).toBe("HIT");
+
+      expect(dataMiss).toEqual(dataHit);
+    });
+
     describe("Error Handling", () => {
       it("retorna null ao pegar uma chave inexistente", async () => {
         const inexistentKey = "inexistent-key";
 
-        const response = await CacheService.getCache(inexistentKey);
+        const response = await CacheService.getCache<any>(inexistentKey);
 
         expect(response).toBe(null);
       });
@@ -86,6 +107,25 @@ describe("Testes de cache", () => {
       expect(defineCacheTtl("/api/recommendations/manga")).toBe(
         CacheService.TTL.MIN
       );
+    });
+
+    it("verifica o TTL real do cache após salvamento", async () => {
+      const routes = [
+        { path: "/api/genres", expectedTtl: CacheService.TTL.MAX },
+        { path: "/api/anime", expectedTtl: CacheService.TTL.LONG },
+        { path: "/api/anime?q=full", expectedTtl: CacheService.TTL.MEDIUM },
+        { path: "/api/top/anime", expectedTtl: CacheService.TTL.SHORT },
+        { path: "/api/reviews/anime", expectedTtl: CacheService.TTL.MIN },
+      ];
+
+      for (const { path, expectedTtl } of routes) {
+        const key = createTestKey(path);
+        await CacheService.setCache(key, { test: "data" }, expectedTtl);
+
+        const ttl = await CacheService.getTtlExpiringTime(key);
+        expect(ttl).toBeGreaterThan(expectedTtl - 5); // Margem de erro de 5
+        expect(ttl).toBeLessThanOrEqual(expectedTtl);
+      }
     });
   });
 
@@ -317,6 +357,21 @@ describe("Testes de cache", () => {
     });
   });
 
+  describe("Concorrência", () => {
+    it("testa concorrência para evitar sobrecarga", async () => {
+      const key = createTestKey("concurrency");
+      const promises = Array.from({ length: 10 }, (_, i) => {
+        CacheService.setCache(key, { value: i }, 300);
+      });
+
+      await Promise.all(promises);
+
+      const result = await CacheService.getCache<any>(key);
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("value");
+    });
+  });
+
   describe("Rota não encontrada", () => {
     it("retorna 404 (NOT_FOUND) ao digitar uma rota não existente", async () => {
       mockServer.use(
@@ -332,9 +387,10 @@ describe("Testes de cache", () => {
       const data = await response.json();
 
       expect(response.status).toBe(404);
+      expect(response.ok).toBe(false);
       expect(data).toHaveProperty("success", false);
       expect(data).toHaveProperty("type", "NOT_FOUND");
-      expect(data).toHaveProperty("message");
+      expect(data).toHaveProperty("message", "Rota não encontrada");
     });
   });
 
@@ -353,9 +409,10 @@ describe("Testes de cache", () => {
       const data = await response.json();
 
       expect(response.status).toBe(500);
+      expect(response.ok).toBe(false);
       expect(data).toHaveProperty("success", false);
       expect(data).toHaveProperty("type", "INTERNAL_SERVER_ERROR");
-      expect(data).toHaveProperty("message");
+      expect(data).toHaveProperty("message", "Erro interno");
     });
   });
 });

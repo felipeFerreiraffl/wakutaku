@@ -1,7 +1,6 @@
 import "../utils/envLoader.js";
 
-import { beforeEach } from "node:test";
-import { afterAll, afterEach, beforeAll } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 import { mockServer } from "../__mocks__/node.js";
 import {
   connectToRedis,
@@ -17,7 +16,9 @@ let server: any;
 beforeAll(async () => {
   console.log("[TEST SETUP] Inicando setup de testes...");
   // Ativa o mock
-  mockServer.listen();
+  mockServer.listen({
+    onUnhandledRequest: "warn",
+  });
 
   // Liga o servidor sempre que iniciar os testes
   server = app.listen(envVar.PORT, () => {

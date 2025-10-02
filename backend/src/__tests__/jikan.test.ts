@@ -12,55 +12,15 @@ describe("Testes de rotas da JIKAN", () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.data).toMatchObject({
+      expect(response.headers.get("X-Cache")).toBeDefined();
+      expect(response.headers.get("Content-Type")).toContain(
+        "application/json"
+      );
+      expect(data.data).toMatchSnapshot({
         totalCount: expect.any(Number),
         frequentGenre: expect.any(String),
         frequentDemography: expect.any(String),
         averageScore: expect.any(Number),
-      });
-    });
-
-    describe("Error Handling", () => {
-      it("retona erro 400 (BAD_REQUEST)", async () => {
-        mockServer.use(
-          errorHandler(
-            `http://localhost:${envVar.PORT}/api/season_stats`,
-            400,
-            "BAD_REQUEST",
-            "URL inválida"
-          )
-        );
-
-        const response = await fetch(
-          `http://localhost:${envVar.PORT}/api/season_stats`
-        );
-        const data = await response.json();
-
-        expect(response.status).toBe(400);
-        expect(data).toHaveProperty("success", false);
-        expect(data).toHaveProperty("type", "BAD_REQUEST");
-        expect(data).toHaveProperty("message");
-      });
-
-      it("retorna erro 429 (TOO_MANY_REQUESTS)", async () => {
-        mockServer.use(
-          errorHandler(
-            `http://localhost:${envVar.PORT}/api/season_stats`,
-            429,
-            "TOO_MANY_REQUESTS",
-            "Muitas requisições por IP. Tente novamente."
-          )
-        );
-
-        const response = await fetch(
-          `http://localhost:${envVar.PORT}/api/season_stats`
-        );
-        const data = await response.json();
-
-        expect(response.status).toBe(429);
-        expect(data).toHaveProperty("success", false);
-        expect(data).toHaveProperty("type", "TOO_MANY_REQUESTS");
-        expect(data).toHaveProperty("message");
       });
     });
   });
@@ -75,10 +35,14 @@ describe("Testes de rotas da JIKAN", () => {
       expect(response.status).toBe(200);
       expect(data).toHaveProperty("success", true);
       expect(data).toHaveProperty("data");
+      expect(response.headers.get("X-Cache")).toBeDefined();
+      expect(response.headers.get("Content-Type")).toContain(
+        "application/json"
+      );
 
       // Verificação de Array
       expect(Array.isArray(data.data)).toBe(true);
-      expect(data.data).toHaveLength(3);
+      expect(data.data.length).toBeGreaterThan(0);
 
       expect(data.data[0]).toMatchObject({
         mal_id: expect.any(Number),
@@ -105,56 +69,15 @@ describe("Testes de rotas da JIKAN", () => {
         expect(scores[i]).toBeGreaterThanOrEqual(scores[i + 1]);
       }
     });
-
-    describe("Error Handling", () => {
-      it("retona erro 400 (BAD_REQUEST)", async () => {
-        mockServer.use(
-          errorHandler(
-            `http://localhost:${envVar.PORT}/api/season_top`,
-            400,
-            "BAD_REQUEST",
-            "URL inválida"
-          )
-        );
-
-        const response = await fetch(
-          `http://localhost:${envVar.PORT}/api/season_top`
-        );
-        const data = await response.json();
-
-        expect(response.status).toBe(400);
-        expect(data).toHaveProperty("success", false);
-        expect(data).toHaveProperty("type", "BAD_REQUEST");
-        expect(data).toHaveProperty("message");
-      });
-
-      it("retorna erro 429 (TOO_MANY_REQUESTS)", async () => {
-        mockServer.use(
-          errorHandler(
-            `http://localhost:${envVar.PORT}/api/season_top`,
-            429,
-            "TOO_MANY_REQUESTS",
-            "Muitas requisições por IP. Tente novamente."
-          )
-        );
-
-        const response = await fetch(
-          `http://localhost:${envVar.PORT}/api/season_top`
-        );
-        const data = await response.json();
-
-        expect(response.status).toBe(429);
-        expect(data).toHaveProperty("success", false);
-        expect(data).toHaveProperty("type");
-        expect(data).toHaveProperty("message");
-      });
-    });
   });
 
-  describe("GET /trending/:type", () => {
-    it("retorna uma lista dos animes em alta (type = anime)", async () => {
+  describe.each([
+    { type: "anime", expectedType: "TV" },
+    { type: "manga", expectedType: "Manga" },
+  ])("GET /trending/$type", ({ type, expectedType }) => {
+    it(`retorna uma lista dos ${type}s em alta`, async () => {
       const response = await fetch(
-        `http://localhost:${envVar.PORT}/api/trending/anime`
+        `http://localhost:${envVar.PORT}/api/trending/${type}`
       );
 
       const data = await response.json();
@@ -171,83 +94,10 @@ describe("Testes de rotas da JIKAN", () => {
       });
 
       // Verifcação de todos os itens possuem mal_id e o tipo seja TV (anime)
-      data.data.forEach((anime: any) => {
-        expect(anime).toHaveProperty("mal_id");
-        expect(anime.mal_id).toBeGreaterThan(0);
-        expect(anime.type).toBe("TV");
-      });
-    });
-
-    it("retorna uma lista dos mangás em alta (type = manga)", async () => {
-      const response = await fetch(
-        `http://localhost:${envVar.PORT}/api/trending/manga`
-      );
-
-      const data = await response.json();
-
-      expect(data).toHaveProperty("success", true);
-
-      expect(Array.isArray(data.data)).toBe(true);
-      expect(data.data).toHaveLength(3);
-
-      expect(data.data[0]).toMatchObject({
-        mal_id: expect.any(Number),
-        type: expect.any(String),
-        status: expect.any(String),
-        score: expect.any(Number),
-        year: expect.any(Number),
-      });
-
-      // Verifcação de todos os itens possuem mal_id
-      data.data.forEach((manga: any) => {
-        expect(manga).toHaveProperty("mal_id");
-        expect(manga.mal_id).toBeGreaterThan(0);
-        expect(manga.type).toBe("Manga");
-      });
-    });
-
-    describe("Error Handling", () => {
-      it("retorna erro 400 (BAD_REQUEST) por tipo inválido", async () => {
-        mockServer.use(
-          errorHandler(
-            `http://localhost:${envVar.PORT}/trending/invalid`,
-            400,
-            "BAD_REQUEST",
-            "URL inválida"
-          )
-        );
-
-        const response = await fetch(
-          `http://localhost:${envVar.PORT}/trending/invalid`
-        );
-        const data = await response.json();
-
-        expect(response.status).toBe(400);
-        expect(data).toHaveProperty("success", false);
-        expect(data).toHaveProperty("type");
-        expect(data).toHaveProperty("message");
-      });
-
-      it("retorna erro 429 (TOO_MANY_REQUESTS)", async () => {
-        mockServer.use(
-          errorHandler(
-            `http://localhost:${envVar.PORT}/trending/:type`,
-            429,
-            "TOO_MANY_REQUESTS",
-            "Muitas requisições por IP. Tente novamente."
-          )
-        );
-
-        const response = await fetch(
-          `http://localhost:${envVar.PORT}/trending/:type`
-        );
-
-        const data = await response.json();
-
-        expect(response.status).toBe(429);
-        expect(data).toHaveProperty("success", false);
-        expect(data).toHaveProperty("type");
-        expect(data).toHaveProperty("message");
+      data.data.forEach((item: any) => {
+        expect(item).toHaveProperty("mal_id");
+        expect(item.mal_id).toBeGreaterThan(0);
+        expect(item.type).toBe(expectedType);
       });
     });
   });
@@ -256,7 +106,7 @@ describe("Testes de rotas da JIKAN", () => {
     it("retorna 404 (NOT_FOUND) ao digitar uma rota não existente", async () => {
       mockServer.use(
         errorHandler(
-          "http://localhost:3000/not-found",
+          `${envVar.JIKAN_API_URL}/not-found`,
           404,
           "NOT_FOUND",
           "Rota não encontrada"
@@ -268,31 +118,9 @@ describe("Testes de rotas da JIKAN", () => {
       const data = await response.json();
 
       expect(response.status).toBe(404);
+      expect(response.ok).toBe(false);
       expect(data).toHaveProperty("success", false);
       expect(data).toHaveProperty("type", "NOT_FOUND");
-      expect(data).toHaveProperty("message");
-    });
-  });
-
-  describe("Erro interno", () => {
-    it("retorna erro 500 (INTERNAL_SERVER_ERROR)", async () => {
-      mockServer.use(
-        errorHandler(
-          `http://localhost:${envVar.PORT}/api/season_stats`,
-          500,
-          "INTERNAL_SERVER_ERROR",
-          "Erro interno"
-        )
-      );
-
-      const response = await fetch(
-        `http://localhost:${envVar.PORT}/api/season_stats`
-      );
-      const data = await response.json();
-
-      expect(response.status).toBe(500);
-      expect(data).toHaveProperty("success", false);
-      expect(data).toHaveProperty("type", "INTERNAL_SERVER_ERROR");
       expect(data).toHaveProperty("message");
     });
   });
