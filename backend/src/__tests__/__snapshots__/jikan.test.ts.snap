@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Testes de rotas da JIKAN > GET /season_stats > retorna as estatísticas da temporada atual de animes 1`] = `
+{
+  "averageScore": Any<Number>,
+  "frequentDemography": Any<String>,
+  "frequentGenre": Any<String>,
+  "totalCount": Any<Number>,
+}
+`;

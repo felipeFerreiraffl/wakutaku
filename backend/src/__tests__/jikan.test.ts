@@ -17,7 +17,7 @@ describe("Testes de rotas da JIKAN", () => {
       expect(data).toHaveProperty("success", true);
       expect(data).toHaveProperty("data");
 
-      expect(data.data).toMatchObject({
+      expect(data.data).toMatchSnapshot({
         totalCount: expect.any(Number),
         frequentGenre: expect.any(String),
         frequentDemography: expect.any(String),
@@ -77,6 +77,8 @@ describe("Testes de rotas da JIKAN", () => {
       );
       const data = await response.json();
 
+      const year = new Date().getFullYear();
+
       expect(response.status).toBe(200);
       expect(data).toHaveProperty("data");
       expect(response.headers.get("X-Cache")).toBeDefined();
@@ -90,6 +92,7 @@ describe("Testes de rotas da JIKAN", () => {
         expect(item).toHaveProperty("score");
         expect(item.mal_id).toBeGreaterThan(0);
         expect(item.type).toBe(expectedType);
+        expect(item.year).toBeGreaterThanOrEqual(year);
       });
     });
   });
