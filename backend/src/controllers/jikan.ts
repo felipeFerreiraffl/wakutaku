@@ -20,7 +20,9 @@ export const getSeasonStats = async (
 ): Promise<void> => {
   try {
     const cacheKey = `season_stats:${req.originalUrl}`;
-    const cacheData = await CacheService.getCache(cacheKey);
+    const cacheData = await CacheService.getCache<JikanSeasonResponse>(
+      cacheKey
+    );
     const ttl = CacheService.TTL.SHORT;
 
     if (cacheData) {
@@ -86,7 +88,9 @@ export const getTopAnimesSeason = async (
 ): Promise<void> => {
   try {
     const cacheKey = `season_top:${req.originalUrl}`;
-    const cacheData = await CacheService.getCache(cacheKey);
+    const cacheData = await CacheService.getCache<JikanSeasonResponse>(
+      cacheKey
+    );
     const ttl = CacheService.TTL.SHORT;
 
     if (cacheData) {
@@ -132,7 +136,12 @@ export const getTrendingData = async (
     const type = req.params.type as "anime" | "manga";
 
     const cacheKey = `trending_${type}:${req.originalUrl}`;
-    const cacheData = await CacheService.getCache(cacheKey);
+    const cacheData =
+      type === "anime"
+        ? await CacheService.getCache<JikanAnimeListResponse>(cacheKey)
+        : type === "manga"
+        ? await CacheService.getCache<JikanMangaListResponse>(cacheKey)
+        : null;
     const ttl = CacheService.TTL.SHORT;
 
     if (cacheData) {
