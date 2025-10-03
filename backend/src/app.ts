@@ -1,6 +1,10 @@
 import "./utils/envLoader";
 
 import express from "express";
+import {
+  connectToRedis,
+  disconnectFromRedis,
+} from "./config/redisConnection.js";
 import { errorHandler, notFoundHandler } from "./middlewares/statusHandler.js";
 import cacheRouter from "./routes/cache.js";
 import jikanRouter from "./routes/jikan.js";
