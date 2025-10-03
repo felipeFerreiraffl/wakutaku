@@ -5,7 +5,7 @@
   "main": "./dist/server.cjs",
   "scripts": {
     "start": "node ./dist/server.cjs",
-    "build": "tsup ./src",
+    "build": "tsup src/server.ts",
     "dev": "tsx watch ./src/server.ts",
     "test": "vitest",
     "test:watch": "vitest run --watch",
