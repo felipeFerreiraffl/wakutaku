@@ -1,5 +1,4 @@
 import { http, HttpResponse } from "msw";
-import { envVar } from "../../config/envConfig.js";
 
 const mockAnimeListResponse = {
   data: [
@@ -86,7 +85,6 @@ const mockMangaListReponse = {
 // Mock de dados
 export const jikanHandlers = [
   http.get(/.*\/seasons\/now/, () => {
-    console.log("[MSW] Interceptando /seasons/now (regex)");
     return HttpResponse.json(mockAnimeListResponse, {
       headers: {
         "Content-Type": "application/json",
@@ -95,7 +93,6 @@ export const jikanHandlers = [
   }),
 
   http.get(/.*\/anime(\?.*)?$/, ({ request }) => {
-    console.log("[MSW] Interceptando /anime");
     const url = new URL(request.url);
     const startDate = url.searchParams.get("start_date");
 
@@ -107,7 +104,6 @@ export const jikanHandlers = [
   }),
 
   http.get(/.*\/manga(\?.*)?$/, ({ request }) => {
-    console.log("[MSW] Interceptando /manga");
     const url = new URL(request.url);
     const startDate = url.searchParams.get("start_date");
 
