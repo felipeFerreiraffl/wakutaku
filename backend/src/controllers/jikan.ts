@@ -33,9 +33,9 @@ export const getSeasonStats = async (
       return;
     }
 
-    const data = await fetchJikanResponse<JikanSeasonResponse>(
-      `${API_URL}/seasons/now`
-    );
+    const fetchUrl = `${API_URL}/seasons/now`;
+
+    const data = await fetchJikanResponse<JikanSeasonResponse>(fetchUrl);
 
     // Total de animes na temporada
     const totalCount = data.pagination?.items?.total ?? 0;

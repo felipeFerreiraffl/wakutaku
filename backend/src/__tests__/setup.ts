@@ -9,22 +9,24 @@ import {
 } from "../config/redisConnection.js";
 import app from "../app.js";
 import { envVar } from "../config/envConfig.js";
+import type { Server } from "http";
 
-let server: any;
+let server: Server;
 
 // Conecta ao Redis antes de iniciar os testes
 beforeAll(async () => {
   console.log("[TEST SETUP] Inicando setup de testes...");
+
   // Ativa o mock
   mockServer.listen({
-    onUnhandledRequest: "warn",
-  });
+    // Ignora URLs localhost
+    onUnhandledRequest: (req, print) => {
+      const url = new URL(req.url);
 
-  // Liga o servidor sempre que iniciar os testes
-  server = app.listen(envVar.PORT, () => {
-    console.log(
-      `[TEST SETUP] Servidor de teste rodando na porta ${envVar.PORT}`
-    );
+      if (url.hostname === "localhost") return;
+
+      print.warning();
+    },
   });
 
   try {
@@ -34,6 +36,16 @@ beforeAll(async () => {
     console.error(`[TEST SETUP] Erro ao configurar testes: ${error}`);
     throw error;
   }
+
+  // Liga o servidor sempre que iniciar os testes
+  await new Promise<void>((res) => {
+    server = app.listen(envVar.PORT, () => {
+      console.log(
+        `[TEST SETUP] Servidor de teste rodando na porta ${envVar.PORT}`
+      );
+      res();
+    });
+  });
 }, 15000);
 
 // Limpeza de todos os caches
@@ -58,7 +70,7 @@ afterAll(async () => {
 
   // Fecha o servidor
   if (server) {
-    await new Promise((res) => server.close(res));
+    await new Promise<void>((res) => server.close(() => res()));
   }
 
   try {

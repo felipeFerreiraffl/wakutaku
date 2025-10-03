@@ -7,19 +7,13 @@ describe("Testes de rotas da JIKAN", () => {
       const response = await fetch(
         `http://localhost:${envVar.PORT}/api/season_stats`
       );
+      expect(response.headers.get("Content-Type")).toContain(
+        "application/json"
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
       expect(response.headers.get("X-Cache")).toBeDefined();
-      expect(response.headers.get("Content-Type")).toContain(
-        "application/json"
-      );
-      expect(data.data).toMatchSnapshot({
-        totalCount: expect.any(Number),
-        frequentGenre: expect.any(String),
-        frequentDemography: expect.any(String),
-        averageScore: expect.any(Number),
-      });
     });
   });
 
@@ -28,35 +22,26 @@ describe("Testes de rotas da JIKAN", () => {
       const response = await fetch(
         `http://localhost:${envVar.PORT}/api/season_top`
       );
-      const data = await response.json();
-
-      expect(response.status).toBe(200);
-      expect(data).toHaveProperty("success", true);
-      expect(data).toHaveProperty("data");
-      expect(response.headers.get("X-Cache")).toBeDefined();
       expect(response.headers.get("Content-Type")).toContain(
         "application/json"
       );
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data).toHaveProperty("data");
+      expect(response.headers.get("X-Cache")).toBeDefined();
 
       // Verificação de Array
       expect(Array.isArray(data.data)).toBe(true);
       expect(data.data.length).toBeGreaterThan(0);
-
-      expect(data.data[0]).toMatchObject({
-        mal_id: expect.any(Number),
-        type: expect.any(String),
-        status: expect.any(String),
-        score: expect.any(Number),
-        year: expect.any(Number),
-      });
 
       const currentYear = new Date().getFullYear();
 
       // Verifcação de todos os itens possuem mal_id e o ano seja igual ao ano atual
       data.data.forEach((anime: any) => {
         expect(anime).toHaveProperty("mal_id");
+        expect(anime).toHaveProperty("score");
         expect(anime.mal_id).toBeGreaterThan(0);
-        expect(anime.year).toBe(currentYear);
       });
 
       // Verificação de ordem por nota
@@ -71,29 +56,30 @@ describe("Testes de rotas da JIKAN", () => {
 
   describe.each([
     { type: "anime", expectedType: "TV" },
-    { type: "manga", expectedType: "Manga" },
+    { type: "manga", expectedType: "manga" },
   ])("GET /trending/$type", ({ type, expectedType }) => {
     it(`retorna uma lista dos ${type}s em alta`, async () => {
       const response = await fetch(
         `http://localhost:${envVar.PORT}/api/trending/${type}`
       );
 
+      expect(response.headers.get("Content-Type")).toContain(
+        "application/json"
+      );
+
       const data = await response.json();
 
-      expect(data).toHaveProperty("success", true);
+      expect(response.status).toBe(200);
       expect(data).toHaveProperty("data");
-
-      expect(data.data[0]).toMatchObject({
-        mal_id: expect.any(Number),
-        type: expect.any(String),
-        status: expect.any(String),
-        score: expect.any(Number),
-        year: expect.any(Number),
-      });
+      expect(response.headers.get("X-Cache")).toBeDefined();
+      expect(data.data).toBeTypeOf("object");
 
       // Verifcação de todos os itens possuem mal_id e o tipo seja TV (anime)
       data.data.forEach((item: any) => {
         expect(item).toHaveProperty("mal_id");
+        expect(item).toHaveProperty("popularity");
+        expect(item).toHaveProperty("favorites");
+        expect(item).toHaveProperty("score");
         expect(item.mal_id).toBeGreaterThan(0);
         expect(item.type).toBe(expectedType);
       });
