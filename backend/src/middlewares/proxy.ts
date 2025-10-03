@@ -3,8 +3,8 @@ import {
   responseInterceptor,
 } from "http-proxy-middleware";
 import { envVar } from "../config/envConfig.js";
-import { defineCacheTtl } from "../utils/defineCacheProps.js";
 import { CacheService } from "../services/cacheService.js";
+import { defineCacheTtl } from "../utils/defineCacheProps.js";
 
 // Cacheia antes da proxy
 export const cacheFirst = async (req: any, res: any, next: any) => {
@@ -36,7 +36,6 @@ export const cacheFirst = async (req: any, res: any, next: any) => {
 
     next();
   } catch (error) {
-    console.error(`[PROXY CACHE] Erro no middleware: ${error}`);
     next(); // Sem cache
   }
 };

@@ -1,5 +1,4 @@
 import { type NextFunction, type Request, type Response } from "express";
-import { success } from "zod";
 
 // Erro que contempla Error com status
 export interface JikanError extends Error {

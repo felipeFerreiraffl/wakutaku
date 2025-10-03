@@ -44,7 +44,6 @@ export class CacheService {
   static async delCache(key: string): Promise<void> {
     try {
       await redisClient.del(key);
-      console.log(`[CACHE] Chave ${key} excluída com sucesso`);
     } catch (error) {
       throw error;
     }
