@@ -4,9 +4,13 @@ import express from "express";
 import { errorHandler, notFoundHandler } from "./middlewares/statusHandler.js";
 import cacheRouter from "./routes/cache.js";
 import jikanRouter from "./routes/jikan.js";
+import cors from "cors";
+import { corsOptions } from "./config/corsOptions.js";
 
 const app = express();
 app.use(express.json());
+
+app.use(cors(corsOptions));
 
 // Rota do estado do cache Redis
 app.use("/api/cache", cacheRouter);
