@@ -4,6 +4,7 @@ import express from "express";
 import {
   errorHandler,
   notFoundHandler,
+  setSuccessMessage,
 } from "./api/middlewares/statusHandler.js";
 import cacheRouter from "./api/routes/cache.js";
 import jikanRouter from "./api/routes/jikan.js";
@@ -16,8 +17,11 @@ app.use(express.json());
 app.use(cors(corsOptions));
 
 // Para habilitar o UptimeRobot
-app.get("/health", (req, res) => {
-  res.status(200).send("OK");
+app.get("/", (req, res) => {
+  setSuccessMessage(res, {
+    message: "WakuTaku API está funcionando",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Rota do estado do cache Redis
