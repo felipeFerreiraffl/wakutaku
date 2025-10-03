@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { envVar } from "../config/envConfig";
-import { CacheService } from "../services/cacheService.js";
+import { CacheService } from "../api/services/cacheService.js";
 import { createTestKey } from "./setup.js";
 import { defineCacheTtl } from "../utils/defineCacheProps.js";
 import { redisClient } from "../config/redisConnection.js";

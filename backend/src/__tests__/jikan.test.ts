@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { envVar } from "../config/envConfig";
+import { envVar } from "../config/envConfig.js";
 
 describe("Testes de rotas da JIKAN", () => {
   describe("GET /season_stats", () => {
