@@ -14,6 +14,15 @@ describe("Testes de rotas da JIKAN", () => {
 
       expect(response.status).toBe(200);
       expect(response.headers.get("X-Cache")).toBeDefined();
+      expect(data).toHaveProperty("success", true);
+      expect(data).toHaveProperty("data");
+
+      expect(data.data).toMatchObject({
+        totalCount: expect.any(Number),
+        frequentGenre: expect.any(String),
+        frequentDemography: expect.any(String),
+        averageScore: expect.any(Number),
+      });
     });
   });
 
@@ -42,6 +51,7 @@ describe("Testes de rotas da JIKAN", () => {
         expect(anime).toHaveProperty("mal_id");
         expect(anime).toHaveProperty("score");
         expect(anime.mal_id).toBeGreaterThan(0);
+        expect(anime.year).toBeGreaterThanOrEqual(currentYear);
       });
 
       // Verificação de ordem por nota
@@ -62,17 +72,15 @@ describe("Testes de rotas da JIKAN", () => {
       const response = await fetch(
         `http://localhost:${envVar.PORT}/api/trending/${type}`
       );
-
       expect(response.headers.get("Content-Type")).toContain(
         "application/json"
       );
-
       const data = await response.json();
 
       expect(response.status).toBe(200);
       expect(data).toHaveProperty("data");
       expect(response.headers.get("X-Cache")).toBeDefined();
-      expect(data.data).toBeTypeOf("object");
+      expect(data.data.length).toBeGreaterThan(0);
 
       // Verifcação de todos os itens possuem mal_id e o tipo seja TV (anime)
       data.data.forEach((item: any) => {

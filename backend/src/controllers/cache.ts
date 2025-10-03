@@ -36,7 +36,6 @@ export const getCacheStatus = async (
         memoryUsed,
         version,
       });
-
       return;
     }
 

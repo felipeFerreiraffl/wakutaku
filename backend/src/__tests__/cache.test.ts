@@ -292,21 +292,24 @@ describe("Testes de cache", () => {
         const response = await fetch(`${CACHE_URL}/clear/${pattern}`);
         const data = await response.json();
 
-        const keys: string[] = [];
+        const keys: string[] = new Array(10);
+        const noKeys: string[] = new Array(0);
 
         expect(data).toHaveProperty("success", true);
 
         if (envVar.NODE_ENV !== "production") {
           // Verificação da quantidade de chaves presentes
-          if (keys.length === 0) {
+          if (noKeys) {
             expect(data.data).toMatchObject({
               message: expect.any(String),
               pattern,
               deleted: 0,
             });
-          } else {
+            return;
+          }
+
+          if (keys) {
             expect(data.data).toMatchObject({
-              message: expect.any(String),
               patternDeleted: pattern,
               keysFound: expect.any(Number),
               keysDeleted: expect.any(Number),
