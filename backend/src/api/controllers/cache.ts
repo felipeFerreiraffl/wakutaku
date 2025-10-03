@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import { envVar } from "../config/envConfig.js";
-import { redisClient } from "../config/redisConnection.js";
+import { envVar } from "../../config/envConfig.js";
+import { redisClient } from "../../config/redisConnection.js";
 import { setSuccessMessage } from "../middlewares/statusHandler.js";
 
 export const getCacheStatus = async (

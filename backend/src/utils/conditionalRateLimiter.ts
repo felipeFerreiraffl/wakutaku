@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import {
   globalRateLimiter,
   searchRateLimiter,
-} from "../middlewares/rateLimiter.js";
+} from "../api/middlewares/rateLimiter.js";
 
 // Condição para rotas múltiplas (pesquisa e lista de animes/mangás)
 export const conditionalRateLimiter = (

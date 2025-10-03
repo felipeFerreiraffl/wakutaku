@@ -2,9 +2,9 @@ import {
   createProxyMiddleware,
   responseInterceptor,
 } from "http-proxy-middleware";
-import { envVar } from "../config/envConfig.js";
+import { envVar } from "../../config/envConfig.js";
 import { CacheService } from "../services/cacheService.js";
-import { defineCacheTtl } from "../utils/defineCacheProps.js";
+import { defineCacheTtl } from "../../utils/defineCacheProps.js";
 
 // Cacheia antes da proxy
 export const cacheFirst = async (req: any, res: any, next: any) => {

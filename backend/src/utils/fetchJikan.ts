@@ -1,4 +1,4 @@
-import type { JikanError } from "../middlewares/statusHandler.js";
+import type { JikanError } from "../api/middlewares/statusHandler.js";
 
 // Resposta de fetch padrão
 export async function fetchJikanResponse<T>(url: string) {

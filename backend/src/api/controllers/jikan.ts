@@ -1,14 +1,14 @@
 import type { NextFunction, Request, Response } from "express";
-import { envVar } from "../config/envConfig.js";
+import { envVar } from "../../config/envConfig.js";
 import { setSuccessMessage } from "../middlewares/statusHandler.js";
 import { CacheService } from "../services/cacheService.js";
 import type {
   JikanAnimeListResponse,
   JikanMangaListResponse,
   JikanSeasonResponse,
-} from "../types/jikanTypes.js";
-import { fetchJikanResponse } from "../utils/fetchJikan.js";
-import { mostFrequentTheme } from "../utils/mostFrequentData.js";
+} from "../../types/jikanTypes.js";
+import { fetchJikanResponse } from "../../utils/fetchJikan.js";
+import { mostFrequentTheme } from "../../utils/mostFrequentData.js";
 
 const API_URL = envVar.JIKAN_API_URL;
 

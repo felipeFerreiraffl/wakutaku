@@ -6,7 +6,7 @@ import {
 } from "../controllers/jikan.js";
 import jikanProxy, { cacheFirst } from "../middlewares/proxy.js";
 import { globalRateLimiter } from "../middlewares/rateLimiter.js";
-import { conditionalRateLimiter } from "../utils/conditionalRateLimiter.js";
+import { conditionalRateLimiter } from "../../utils/conditionalRateLimiter.js";
 
 // Rota do Express
 const router = Router();

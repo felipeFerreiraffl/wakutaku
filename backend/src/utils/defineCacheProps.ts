@@ -1,4 +1,4 @@
-import { CacheService } from "../services/cacheService.js";
+import { CacheService } from "../api/services/cacheService.js";
 
 // Define o TTL do cache
 export const defineCacheTtl = (url: string): number => {

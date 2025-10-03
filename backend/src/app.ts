@@ -1,9 +1,9 @@
 import "./utils/envLoader";
 
 import express from "express";
-import { errorHandler, notFoundHandler } from "./middlewares/statusHandler.js";
-import cacheRouter from "./routes/cache.js";
-import jikanRouter from "./routes/jikan.js";
+import { errorHandler, notFoundHandler } from "./api/middlewares/statusHandler.js";
+import cacheRouter from "./api/routes/cache.js";
+import jikanRouter from "./api/routes/jikan.js";
 import cors from "cors";
 import { corsOptions } from "./config/corsOptions.js";
 
