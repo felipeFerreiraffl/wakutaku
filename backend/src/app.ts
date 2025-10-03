@@ -1,7 +1,10 @@
 import "./utils/envLoader";
 
 import express from "express";
-import { errorHandler, notFoundHandler } from "./api/middlewares/statusHandler.js";
+import {
+  errorHandler,
+  notFoundHandler,
+} from "./api/middlewares/statusHandler.js";
 import cacheRouter from "./api/routes/cache.js";
 import jikanRouter from "./api/routes/jikan.js";
 import cors from "cors";
@@ -11,6 +14,11 @@ const app = express();
 app.use(express.json());
 
 app.use(cors(corsOptions));
+
+// Para habilitar o UptimeRobot
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
 
 // Rota do estado do cache Redis
 app.use("/api/cache", cacheRouter);
