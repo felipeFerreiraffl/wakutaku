@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { envVar } from "../config/envConfig";
 import { CacheService } from "../api/services/cacheService.js";
-import { createTestKey } from "./setup.js";
-import { defineCacheTtl } from "../utils/defineCacheProps.js";
+import { envVar } from "../config/envConfig";
 import { redisClient } from "../config/redisConnection.js";
-import { mockServer } from "../__mocks__/node.js";
+import { defineCacheTtl } from "../utils/defineCacheProps.js";
+import { createTestKey } from "./setup.js";
 
 const CACHE_URL = `http://localhost:${envVar.PORT}/api/cache`;
 
