@@ -12,34 +12,14 @@ import jikanRouter from "./routes/jikan.js";
 const app = express();
 app.use(express.json());
 
-async function startServer() {
-  try {
-    console.log("🔄️ Conectando-se ao Redis...");
-    await connectToRedis();
+// Rota do estado do cache Redis
+app.use("/api/cache", cacheRouter);
 
-    console.log(`✅ Conexão feita com sucesso`);
+// Rotas da Jikan
+app.use("/api", jikanRouter);
 
-    // Rota do estado do cache Redis
-    app.use("/api/cache", cacheRouter);
-
-    // Rotas da Jikan
-    app.use("/api", jikanRouter);
-
-    // Middleware de status
-    app.use(errorHandler);
-    app.use(notFoundHandler);
-  } catch (error) {
-    console.error(`❌ Erro ao inicar o servidor: ${error}`);
-    process.exit(1);
-  }
-}
-
-process.on("SIGINT", async () => {
-  console.log("🛑 Fechando aplicação...");
-  await disconnectFromRedis();
-  process.exit(0);
-});
-
-startServer();
+// Middleware de status
+app.use(errorHandler);
+app.use(notFoundHandler);
 
 export default app;
