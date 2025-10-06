@@ -46,11 +46,12 @@ export const getSeasonStats = async (
     const genreMap: Record<string, number> = {};
     const demographyMap: Record<string, number> = {};
 
-    let frequentGenre;
-    let frequentDemography;
-
-    frequentGenre = mostFrequentTheme("genres", data, genreMap);
-    frequentDemography = mostFrequentTheme("demographics", data, demographyMap);
+    const frequentGenre = mostFrequentTheme("genres", data, genreMap);
+    const frequentDemography = mostFrequentTheme(
+      "demographics",
+      data,
+      demographyMap
+    );
 
     // Contagem das avaliações dos animes
     let scoreCount = 0;
