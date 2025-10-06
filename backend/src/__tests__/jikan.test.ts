@@ -39,8 +39,6 @@ describe("Testes de rotas da JIKAN", () => {
       expect(response.status).toBe(200);
       expect(data).toHaveProperty("data");
       expect(response.headers.get("X-Cache")).toBeDefined();
-
-      // Verificação de Array
       expect(Array.isArray(data.data)).toBe(true);
       expect(data.data.length).toBeGreaterThan(0);
 
@@ -82,6 +80,7 @@ describe("Testes de rotas da JIKAN", () => {
       expect(response.status).toBe(200);
       expect(data).toHaveProperty("data");
       expect(response.headers.get("X-Cache")).toBeDefined();
+      expect(Array.isArray(data.data)).toBe(true);
       expect(data.data.length).toBeGreaterThan(0);
 
       // Verifcação de todos os itens possuem mal_id e o tipo seja TV (anime)
