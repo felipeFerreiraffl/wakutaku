@@ -42,6 +42,22 @@ export const errorHandler = (
   });
 };
 
+// Erro 400 -> erro de handler
+export const badRequestHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  const error: JikanError = new Error("Erro de requisição ou sintaxe");
+  const type = getStatusCode[400];
+
+  res.status(400).json({
+    success: false,
+    type,
+    message: error.message,
+  });
+};
+
 // Erro 404 -> rota não encontrada
 export const notFoundHandler = (
   req: Request,
@@ -49,7 +65,6 @@ export const notFoundHandler = (
   next: NextFunction
 ): void => {
   const error: JikanError = new Error(`Rota ${req.originalUrl} não encontrada`);
-
   const type = getStatusCode[404];
 
   res.status(404).json({
