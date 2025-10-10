@@ -2,6 +2,7 @@ import "./utils/envLoader";
 
 import express from "express";
 import {
+  badRequestHandler,
   errorHandler,
   notFoundHandler,
   setSuccessMessage,
@@ -32,6 +33,7 @@ app.use("/api", jikanRouter);
 
 // Middleware de status
 app.use(errorHandler);
+app.use(badRequestHandler);
 app.use(notFoundHandler);
 
 export default app;
