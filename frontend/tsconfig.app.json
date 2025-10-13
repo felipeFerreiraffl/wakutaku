@@ -22,7 +22,16 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "paths": {
+      "@/*": ["/src/*"],
+      "@components/*": ["/src/components/*"],
+      "@utils/*": ["/src/services/utils/*"],
+      "@api/*": ["/src/services/api"],
+      "@pages/*": ["/src/pages/*"],
+      "@images/*": ["/src/assets/*"]
+    }
   },
   "include": ["src"]
 }
