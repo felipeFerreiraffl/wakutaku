@@ -147,7 +147,7 @@ export const clearCache = async (
   try {
     if (envVar.NODE_ENV === "production") {
       setSuccessMessage(res, {
-        error: "Limpeza completa apenas em ambiente de desenvolvimento o teste",
+        error: "Limpeza completa apenas em ambiente de desenvolvimento ou teste",
       });
       return;
     }

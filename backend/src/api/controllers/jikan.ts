@@ -61,11 +61,31 @@ export const getSeasonStats = async (
     const averageScore =
       Number((scoreCount / data.pagination?.items?.count).toFixed(2)) ?? 0.0; // Média das avaliações
 
+    const animesHasScoreNull = data.data.some(
+      (item) => item.score === null || item.score === undefined
+    );
+    const animesWithoutScore = data.data.filter((item) => item.score === null);
+
+    const seasonScore = animesHasScoreNull
+      ? "Não disponível"
+      : averageScore >= 7.2
+      ? "Ótima"
+      : averageScore < 7.2 && averageScore >= 6.8
+      ? "Boa"
+      : averageScore < 6.8 && averageScore >= 6.5
+      ? "OK"
+      : averageScore < 6.5 && averageScore >= 6
+      ? "Fraca"
+      : "Muito Fraca";
+
     const result = {
       totalCount,
       frequentGenre,
       frequentDemography,
       averageScore,
+      seasonScore,
+      isCalculating: animesHasScoreNull,
+      animesWithoutScore: animesWithoutScore.length,
     };
 
     await CacheService.setCache(cacheKey, result, ttl);
