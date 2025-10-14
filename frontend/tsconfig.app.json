@@ -24,13 +24,16 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["/src/*"],
-      "@components/*": ["/src/components/*"],
-      "@utils/*": ["/src/services/utils/*"],
-      "@api/*": ["/src/services/api"],
-      "@pages/*": ["/src/pages/*"],
-      "@images/*": ["/src/assets/*"]
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@utils/*": ["src/services/utils/*"],
+      "@api/*": ["src/services/api"],
+      "@pages/*": ["src/pages/*"],
+      "@images/*": ["src/assets/*"],
+      "@translation/en/*": ["public/locales/en/*"],
+      "@translation/pt-BR/*": ["public/locales/pt-BR/*"]
     }
   },
   "include": ["src"]
