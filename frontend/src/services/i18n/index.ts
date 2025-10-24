@@ -5,18 +5,18 @@ import languageDetector from "i18next-browser-languagedetector";
 import i18nBackend from "i18next-http-backend";
 import { initReactI18next } from "react-i18next";
 
-// Arquivo padrão de tradução
-export const defaultNS = "translation";
+// // Arquivo padrão de tradução
+// export const defaultNS = "translation";
 
-// Recursos e traduções
-export const resources = {
-  en: {
-    translation: enTranslation,
-  },
-  ptBr: {
-    translation: ptBrTranslation,
-  },
-} as const;
+// // Recursos e traduções
+// export const resources = {
+//   en: {
+//     translation: enTranslation,
+//   },
+//   ptBr: {
+//     translation: ptBrTranslation,
+//   },
+// } as const;
 
 // Configuração do i18next
 i18n
@@ -26,8 +26,8 @@ i18n
   .init({
     fallbackLng: "pt-BR",
     ns: ["translation"],
-    defaultNS,
-    resources,
+    // defaultNS,
+    // resources,
 
     backend: {
       loadPath: "/locales/{{lng}}/{{ns}}.json",
