@@ -1,0 +1,84 @@
+:root {
+  /* ##### Tamanhos ##### */
+  --size-2: 0.125rem;
+  --size-4: 0.25rem;
+  --size-8: 0.5rem;
+  --size-12: 0.75rem;
+  --size-16: 1rem;
+  --size-20: 1.25rem;
+  --size-24: 1.5rem;
+  --size-28: 1.75rem;
+  --size-32: 2rem;
+  --size-36: 2.25rem;
+  --size-40: 2.5rem;
+  --size-44: 2.75rem;
+  --size-48: 3rem;
+  --size-52: 3.25rem;
+  --size-56: 3.5rem;
+  --size-60: 3.75rem;
+  --size-64: 4rem;
+  --size-68: 4.25rem;
+  --size-72: 4.5rem;
+  --size-76: 4.75rem;
+  --size-80: 5rem;
+  --size-84: 5.25rem;
+  --size-88: 5.5rem;
+  --size-92: 5.75rem;
+  --size-96: 6rem;
+  --size-100: 6.25rem;
+  --size-104: 6.5rem;
+  --size-108: 6.75rem;
+  --size-112: 7rem;
+  --size-116: 7.25rem;
+  --size-120: 7.5rem;
+
+  /* Valores específicos acima de 120px */
+  --size-124: 7.75rem;
+  --size-188: 11.75rem;
+  --size-192: 12rem;
+  --size-196: 12.25rem;
+  --size-200: 12.5rem;
+  --size-204: 12.75rem;
+  --size-212: 13.25rem;
+  --size-220: 13.75rem;
+  --size-224: 14rem;
+  --size-248: 15.5rem;
+  --size-256: 16rem;
+  --size-260: 16.25rem;
+  --size-288: 18rem;
+  --size-312: 19.5rem;
+  --size-320: 20rem;
+  --size-324: 20.25rem;
+  --size-356: 22.25rem;
+  --size-380: 23.75rem;
+  --size-384: 24rem;
+  --size-388: 24.25rem;
+  --size-412: 25.75rem;
+  --size-440: 27.5rem;
+  --size-460: 28.75rem;
+  --size-488: 30.5rem;
+  --size-500: 31.25rem;
+  --size-760: 47.5rem;
+
+  /* ##### Fontes ##### */
+
+  /* font-family */
+  --title-font-family: "M PLUS 1p", sans-serif;
+  --body-font-family: "Noto Sans JP", sans-serif;
+
+  /* Títulos */
+  --title-headline_1: 700 var(--size-80) var(--title-font-family);
+  --title-headline_2: 700 var(--size-64) var(--title-font-family);
+  --title-headline_3: 700 var(--size-48) var(--title-font-family);
+  --title-headline_4: 700 var(--size-36) var(--title-font-family);
+  --title-headline_5: 700 var(--size-32) var(--title-font-family);
+
+  /* Corpo */
+  --body-subtitle: 500 var(--size-24) var(--body-font-family);
+  --body-large_bold: 700 var(--size-20) var(--body-font-family);
+  --body-large_regular: 400 var(--size-20) var(--body-font-family);
+  --body-medium_bold: 700 var(--size-16) var(--body-font-family);
+  --body-medium_regular: 400 var(--size-16) var(--body-font-family);
+  --body-small_bold: 700 var(--size-12) var(--body-font-family);
+  --body-small_regular: 400 var(--size-12) var(--body-font-family);
+}
