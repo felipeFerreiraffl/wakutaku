@@ -63,22 +63,61 @@
   /* ##### Fontes ##### */
 
   /* font-family */
-  --title-font-family: "M PLUS 1p", sans-serif;
-  --body-font-family: "Noto Sans JP", sans-serif;
+  --font-title-font-family: "M PLUS 1p", sans-serif;
+  --font-body-font-family: "Noto Sans JP", sans-serif;
 
   /* Títulos */
-  --title-headline_1: 700 var(--size-80) var(--title-font-family);
-  --title-headline_2: 700 var(--size-64) var(--title-font-family);
-  --title-headline_3: 700 var(--size-48) var(--title-font-family);
-  --title-headline_4: 700 var(--size-36) var(--title-font-family);
-  --title-headline_5: 700 var(--size-32) var(--title-font-family);
+  --font-title-headline_1: 700 var(--size-80) var(--title-font-family);
+  --font-title-headline_2: 700 var(--size-64) var(--title-font-family);
+  --font-title-headline_3: 700 var(--size-48) var(--title-font-family);
+  --font-title-headline_4: 700 var(--size-36) var(--title-font-family);
+  --font-title-headline_5: 700 var(--size-32) var(--title-font-family);
 
   /* Corpo */
-  --body-subtitle: 500 var(--size-24) var(--body-font-family);
-  --body-large_bold: 700 var(--size-20) var(--body-font-family);
-  --body-large_regular: 400 var(--size-20) var(--body-font-family);
-  --body-medium_bold: 700 var(--size-16) var(--body-font-family);
-  --body-medium_regular: 400 var(--size-16) var(--body-font-family);
-  --body-small_bold: 700 var(--size-12) var(--body-font-family);
-  --body-small_regular: 400 var(--size-12) var(--body-font-family);
+  --font-body-subtitle: 500 var(--size-24) var(--body-font-family);
+  --font-body-large_bold: 700 var(--size-20) var(--body-font-family);
+  --font-body-large_regular: 400 var(--size-20) var(--body-font-family);
+  --font-body-medium_bold: 700 var(--size-16) var(--body-font-family);
+  --font-body-medium_regular: 400 var(--size-16) var(--body-font-family);
+  --font-body-small_bold: 700 var(--size-12) var(--body-font-family);
+  --font-body-small_regular: 400 var(--size-12) var(--body-font-family);
+
+  /* ##### Cores ##### */
+
+  /* Animes */
+  --color-main-anime-main_kurenai: 203 27 69;
+  --color-main-anime-extralight_taikoh: 248 195 205;
+  --color-main-anime-light_nakabeni: 219 77 109;
+  --color-main-anime-dark_suoh: 142 53 74;
+  --color-main-anime-extradark_kuwazome: 100 54 60;
+
+  /* Mangás */
+  --color-main-manga-main_ayame: 111 51 129;
+  --color-main-manga-extralight_benifuji: 180 129 187;
+  --color-main-manga-light_hashitta: 219 77 109;
+  --color-main-manga-dark_kokimarusaki: 74 34 93;
+  --color-main-manga-extradark_kurobeni: 63 43 54;
+
+  /* Auxiliares */
+  --color-auxiliary-golden_ukon: 239 187 36;
+  --color-auxiliary-red_syojyohi: 232 48 21;
+  --color-auxiliary-green_tokiwa: 27 129 62;
+  --color-auxiliary-blue_ruri: 0 92 175;
+
+  /* Neutras */
+  --color-neutral-black_kuro: 8 8 8;
+  --color-neutral-dark_ro: 12 12 12;
+  --color-neutral-grey_rikyunezumi: 112 124 116;
+  --color-neutral-white_ruri: 255 255 251;
+
+  /* ##### Efeitos ##### */
+
+  /* Blur */
+  --blur-bg8: blur(8px);
+  --blur-bg8: blur(12px);
+
+  /* Sombras */
+  --shadow-center-neutral-black_8: 0 0 8px rgb(--color-neutral-black_kuro / 0.6);
+  --shadow-right-neutral-black_8: 2px 2px 4px
+    rgb(--color-neutral-black_kuro / 0.6);
 }
